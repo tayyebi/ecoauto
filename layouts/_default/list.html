@@ -1,0 +1,44 @@
+{{ define "main" }}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="page-breadcrumb">{{ . }}</p>{{ end }}
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    {{ if eq .Section "products" }}
+    <div class="products-grid">
+      {{ range .Pages }}
+      <article class="product-card">
+        <div class="product-image">{{ with .Params.image }}<img src="{{ . }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
+        <div class="product-body">
+          <h3 class="product-title">{{ .Title }}</h3>
+          <p class="product-desc">{{ .Params.description | default "توضیحات محصول" }}</p>
+          <div class="product-footer">
+            <span class="product-price">{{ .Params.price | default "تماس بگیرید" }}</span>
+            <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
+          </div>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+    {{ else if eq .Section "categories" }}
+    <div class="categories-grid">
+      {{ range .Pages }}
+      <div class="category-card">
+        <span class="category-icon">{{ .Params.icon | default "⚡" }}</span>
+        <h3 class="category-title">{{ .Title }}</h3>
+        <p class="product-desc">{{ .Params.description | default "" }}</p>
+        <span class="category-count">{{ len .Pages }} محصول</span>
+      </div>
+      {{ end }}
+    </div>
+    {{ else }}
+    <div class="content-body">
+      {{ .Content }}
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

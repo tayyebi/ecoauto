@@ -1,0 +1,27 @@
+{{ define "main" }}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="page-breadcrumb">{{ . }}</p>{{ end }}
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="products-grid">
+      {{ range .Pages }}
+      <article class="product-card">
+        <div class="product-image">{{ with .Params.image }}<img src="{{ . }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
+        <div class="product-body">
+          <h3 class="product-title">{{ .Title }}</h3>
+          <p class="product-desc">{{ .Params.description | default "توضیحات محصول" }}</p>
+          <div class="product-footer">
+            <span class="product-price">{{ .Params.price | default "تماس بگیرید" }}</span>
+            <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
+          </div>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

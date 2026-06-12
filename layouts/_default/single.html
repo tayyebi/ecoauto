@@ -1,0 +1,31 @@
+{{ define "main" }}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="page-breadcrumb">{{ . }}</p>{{ end }}
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    {{ if eq .Section "products" }}
+    <div class="content-page">
+      {{ with .Params.image }}
+      <img src="{{ . }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
+      {{ end }}
+      {{ with .Params.price }}
+      <p style="font-family:var(--font-heading);font-size:1.5rem;color:var(--accent);margin-bottom:1rem;">قیمت: {{ . }}</p>
+      {{ end }}
+      <div class="content-body">
+        {{ .Content }}
+      </div>
+    </div>
+    {{ else }}
+    <div class="content-page">
+      <div class="content-body">
+        {{ .Content }}
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

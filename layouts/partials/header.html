@@ -1,0 +1,22 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <a href="{{ .Site.Home.RelPermalink }}">اکواتو</a>
+      <span>قطعات خودروهای برقی</span>
+    </div>
+    <button class="nav-toggle" aria-label="منو">☰</button>
+    <nav class="main-nav">
+      <ul>
+        {{ $currentPage := . }}
+        {{ range .Site.Menus.main }}
+        <li><a href="{{ .URL }}" {{ if $currentPage.IsMenuCurrent "main" . }}class="active"{{ end }}>{{ .Name }}</a></li>
+        {{ end }}
+      </ul>
+    </nav>
+  </div>
+</header>
+<script>
+document.querySelector('.nav-toggle')?.addEventListener('click', function() {
+  document.querySelector('.main-nav').classList.toggle('open');
+});
+</script>

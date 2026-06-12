@@ -1,0 +1,20 @@
+{{ define "main" }}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">{{ .Title }}</h1>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="categories-grid">
+      {{ range .Pages }}
+      <a href="{{ .RelPermalink }}" class="category-card">
+        <span class="category-icon">{{ .Params.icon | default "⚡" }}</span>
+        <h3 class="category-title">{{ .Title }}</h3>
+        <span class="category-count">{{ len .Pages }} محصول</span>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

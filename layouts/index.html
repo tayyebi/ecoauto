@@ -1,0 +1,81 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1 class="hero-title">قطعات اصلی خودروهای برقی</h1>
+      <p class="hero-subtitle">تامین‌کننده تخصصی قطعات و تجهیزات خودروهای برقی با بالاترین کیفیت و گارانتی اصالت کالا</p>
+      <a href="{{ "/products/" | relLangURL }}" class="hero-cta">مشاهده محصولات</a>
+    </div>
+    <div class="hero-image">
+      <div class="hero-placeholder">تصویر محصول</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">دسته‌بندی محصولات</h2>
+      <p class="section-subtitle">انواع قطعات و تجهیزات خودروهای برقی در یک نگاه</p>
+    </div>
+    <div class="categories-grid">
+      {{ range where .Site.RegularPages "Section" "categories" }}
+      <a href="{{ .RelPermalink }}" class="category-card">
+        <span class="category-icon">{{ .Params.icon | default "⚡" }}</span>
+        <h3 class="category-title">{{ .Title }}</h3>
+        <span class="category-count">{{ len .Pages }} محصول</span>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">محصولات ویژه</h2>
+      <p class="section-subtitle">پرطرفدارترین محصولات فروشگاه</p>
+    </div>
+    <div class="products-grid">
+      {{ range first 6 (where .Site.RegularPages "Section" "products") }}
+      <article class="product-card">
+        <div class="product-image">{{ with .Params.image }}<img src="{{ . }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
+        <div class="product-body">
+          <h3 class="product-title">{{ .Title }}</h3>
+          <p class="product-desc">{{ .Params.description | default "توضیحات محصول" }}</p>
+          <div class="product-footer">
+            <span class="product-price">{{ .Params.price | default "تماس بگیرید" }}</span>
+            <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
+          </div>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">چرا اکواتو؟</h2>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card">
+        <span class="category-icon">✓</span>
+        <h3 class="category-title">ضمانت اصالت</h3>
+        <p class="product-desc">تمامی محصولات دارای گارانتی اصالت و سلامت کالا می‌باشند</p>
+      </div>
+      <div class="category-card">
+        <span class="category-icon">✓</span>
+        <h3 class="category-title">تامین تخصصی</h3>
+        <p class="product-desc">تخصص ما قطعات خودروهای برقی است؛ از باتری تا موتور</p>
+      </div>
+      <div class="category-card">
+        <span class="category-icon">✓</span>
+        <h3 class="category-title">پشتیبانی فنی</h3>
+        <p class="product-desc">تیم فنی ما در تمام مراحل خرید همراه شماست</p>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}
