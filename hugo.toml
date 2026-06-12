@@ -1,0 +1,22 @@
+baseURL = 'https://www.ecoauto.ir/'
+locale = 'fa-IR'
+defaultContentLanguage = 'fa'
+title = 'اکواتو | قطعات خودروهای برقی'
+enableGitInfo = false
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[params]
+  description = 'فروشگاه تخصصی قطعات خودروهای برقی'
+  rtl = true
+
+[languages.fa]
+  languageName = 'فارسی'
+  contentDir = 'content'
+  weight = 1
+
+[outputs]
+  home = ['HTML']
+  section = ['HTML']
+  page = ['HTML']
