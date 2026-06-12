@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
 @import url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel@v3.4.0/dist/Sahel.css');
 
 :root {
@@ -22,7 +23,7 @@
   --header-bg: var(--black);
   --footer-bg: var(--grey-dark);
   --hero-bg: var(--black);
-  --font-heading: 'Sahel', system-ui, sans-serif;
+  --font-heading: 'Lalezar', system-ui, sans-serif;
   --font-body: 'Sahel', system-ui, sans-serif;
   --max-width: 1200px;
   --header-height: 80px;
