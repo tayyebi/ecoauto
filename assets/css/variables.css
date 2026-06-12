@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel@v3.4.0/dist/Sahel.css');
+
+:root {
+  --orange: #F58220;
+  --orange-dark: #E06A0E;
+  --orange-light: #FF9A3E;
+  --black: #1A1A1A;
+  --black-pure: #000000;
+  --grey-dark: #2B2E33;
+  --grey-mid: #5C5D5F;
+  --grey-light: #D6D6D8;
+  --white: #FFFFFF;
+  --off-white: #F5F5F0;
+  --body-bg: var(--off-white);
+  --card-bg: var(--white);
+  --text-primary: var(--black-pure);
+  --text-on-dark: var(--white);
+  --text-muted: var(--grey-mid);
+  --border-color: var(--grey-light);
+  --accent: var(--orange);
+  --accent-hover: var(--orange-dark);
+  --header-bg: var(--black);
+  --footer-bg: var(--grey-dark);
+  --hero-bg: var(--black);
+  --font-heading: 'Lalezar', system-ui, sans-serif;
+  --font-body: 'Sahel', system-ui, sans-serif;
+  --max-width: 1200px;
+  --header-height: 80px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --transition: 200ms ease;
+}
