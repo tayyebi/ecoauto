@@ -34,6 +34,16 @@
       </div>
       {{ end }}
     </div>
+    {{ else if eq .Section "vendors" }}
+    <div class="vendors-grid">
+      {{ range .Pages }}
+      <article class="vendor-card">
+        <h3 class="vendor-title">{{ .Title }}</h3>
+        <p class="vendor-desc">{{ .Params.description | default "" }}</p>
+        <a href="{{ .RelPermalink }}" class="vendor-link">جزئیات</a>
+      </article>
+      {{ end }}
+    </div>
     {{ else }}
     <div class="content-body">
       {{ .Content }}
