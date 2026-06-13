@@ -863,3 +863,60 @@ img {
     grid-template-columns: 1fr;
   }
 }
+
+/* Sitemap */
+.sitemap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+.sitemap-group {
+  background: var(--ev-bg-raised);
+  border-radius: var(--ev-radius-md);
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--ev-border-subtle);
+}
+.sitemap-group-title {
+  font-family: var(--ev-font-heading);
+  font-size: 1.25rem;
+  color: var(--ev-brand);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ev-brand);
+}
+.sitemap-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sitemap-list li {
+  margin-bottom: 0.4rem;
+}
+.sitemap-list a {
+  color: var(--ev-text-secondary);
+  font-size: 0.92rem;
+  transition: color var(--ev-transition), padding-right var(--ev-transition);
+  display: inline-block;
+}
+.sitemap-list a:hover {
+  color: var(--ev-brand);
+  padding-right: 4px;
+}
+.sitemap-list-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.3rem 1rem;
+}
+.sitemap-list-compact li {
+  margin-bottom: 0.2rem;
+}
+.sitemap-more {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ev-border-subtle);
+}
+.sitemap-more a {
+  font-family: var(--ev-font-heading);
+  font-size: 0.9rem;
+  color: var(--ev-brand);
+}

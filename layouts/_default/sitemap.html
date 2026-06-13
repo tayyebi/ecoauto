@@ -1,0 +1,71 @@
+{{ define "main" }}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">{{ .Title }}</h1>
+    <p class="page-breadcrumb">دسترسی سریع به تمام صفحات سایت</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="sitemap-grid">
+
+      <div class="sitemap-group">
+        <h2 class="sitemap-group-title">صفحات اصلی</h2>
+        <ul class="sitemap-list">
+          <li><a href="/">صفحه اصلی</a></li>
+          {{ range where .Site.RegularPages "Section" "" }}
+            {{ if not (eq .RelPermalink "/sitemap/") }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            {{ end }}
+          {{ end }}
+          <li><a href="/products/">محصولات</a></li>
+          <li><a href="/categories/">دسته‌بندی‌ها</a></li>
+          <li><a href="/vendors/">تامین‌کنندگان</a></li>
+          <li><a href="/blog/">وبلاگ</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-group">
+        <h2 class="sitemap-group-title">دسته‌بندی محصولات</h2>
+        <ul class="sitemap-list">
+          {{ range .Site.Taxonomies.categories.ByCount }}
+          <li><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }} ({{ .Count }})</a></li>
+          {{ end }}
+        </ul>
+      </div>
+
+      <div class="sitemap-group">
+        <h2 class="sitemap-group-title">تامین‌کنندگان</h2>
+        <ul class="sitemap-list sitemap-list-compact">
+          {{ range where .Site.RegularPages "Section" "vendors" }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </ul>
+      </div>
+
+      <div class="sitemap-group">
+        <h2 class="sitemap-group-title">آخرین محصولات</h2>
+        <ul class="sitemap-list sitemap-list-compact">
+          {{ range first 50 (where .Site.RegularPages "Section" "products") }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </ul>
+        {{ $productCount := len (where .Site.RegularPages "Section" "products") }}
+        {{ if gt $productCount 50 }}
+        <p class="sitemap-more"><a href="/products/">نمایش همه {{ $productCount }} محصول ←</a></p>
+        {{ end }}
+      </div>
+
+      <div class="sitemap-group">
+        <h2 class="sitemap-group-title">وبلاگ</h2>
+        <ul class="sitemap-list">
+          {{ range where .Site.RegularPages "Section" "blog" }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+{{ end }}
