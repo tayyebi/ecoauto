@@ -607,7 +607,7 @@ img {
   color: var(--ev-text-primary);
   z-index: 200;
   overflow-y: auto;
-  border-left: 1px solid var(--ev-border-subtle);
+  border-left: 3px solid var(--ev-brand);
 }
 
 .sidebar-header {
@@ -615,7 +615,7 @@ img {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--ev-border-subtle);
+  border-bottom: 3px solid var(--ev-brand);
 }
 .sidebar-logo img {
   max-height: 48px;
@@ -633,7 +633,7 @@ img {
 
 .sidebar-nav {
   padding: 1rem 0;
-  border-bottom: 1px solid var(--ev-border-subtle);
+  border-bottom: 3px solid var(--ev-brand);
 }
 .sidebar-nav ul {
   list-style: none;
@@ -666,6 +666,9 @@ img {
 }
 .sidebar-cat-item {
   border-bottom: 1px solid var(--ev-border-subtle);
+}
+.sidebar-cat-item:last-child {
+  border-bottom: none;
 }
 .sidebar-cat-row {
   display: flex;
