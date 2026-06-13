@@ -765,8 +765,8 @@ img {
   display: block;
 }
 
-/* Main content offset for desktop sidebar */
-.site-main {
+/* Content wrapper offset for desktop sidebar */
+.site-wrapper {
   margin-right: var(--ev-sidebar-width);
 }
 
@@ -785,7 +785,7 @@ img {
   .sidebar-close {
     display: block;
   }
-  .site-main {
+  .site-wrapper {
     margin-right: 0;
   }
   .hero-grid {
