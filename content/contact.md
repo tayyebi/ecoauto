@@ -7,8 +7,8 @@ description: "راه‌های ارتباطی با اکواتو"
 
 **آدرس:** تهران، ایران
 
-**تلفن:** ۰۲۱-۱۲۳۴۵۶۷۸
+**تلفن:** <a href="tel:+989120982276" dir="ltr">۰۹۱۲۰۹۸۲۲۷۶</a>
 
-**ایمیل:** info@ecoauto.ir
+**ایمیل:** <a href="mailto:tayyebimohammadreza@gmail.com">tayyebimohammadreza@gmail.com</a>
 
 **ساعت کاری:** شنبه تا پنجشنبه ۹ الی ۱۸
