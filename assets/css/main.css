@@ -405,30 +405,6 @@ img {
   color: var(--ev-brand);
 }
 
-/* Breadcrumb */
-.breadcrumb {
-  max-width: var(--ev-max-width);
-  margin: 0 auto;
-  padding: 1rem 20px 0;
-  font-size: 0.8rem;
-  color: var(--ev-text-muted);
-  direction: rtl;
-}
-.breadcrumb a {
-  color: var(--ev-text-muted);
-  text-decoration: none;
-}
-.breadcrumb a:hover {
-  color: var(--ev-brand);
-}
-.breadcrumb-sep {
-  margin: 0 0.4rem;
-  color: var(--ev-text-disabled);
-}
-.breadcrumb-current {
-  color: var(--ev-text-secondary);
-}
-
 /* Content Pages */
 .content-page {
   padding: 3rem 0;

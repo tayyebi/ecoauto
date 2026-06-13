@@ -8,7 +8,7 @@
       {{- $crumbs = $crumbs | append (dict "url" .RelPermalink "title" .Title) -}}
     {{- end -}}
   {{- end -}}
-  {{- if eq .Section "products" -}}
+  {{- if or (eq .Section "products") (eq .Section "blog") -}}
     {{- $firstCat := index .Params.categories 0 | default "" -}}
     {{- with $firstCat -}}
       {{- with site.GetPage (printf "/categories/%s" .) -}}

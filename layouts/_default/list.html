@@ -59,7 +59,7 @@
           <p class="blog-row-desc">{{ .Params.description | default "" }}</p>
           <div class="blog-row-meta">
             {{ with .Params.date }}<span class="blog-row-date">{{ .Format "2006-01-02" }}</span>{{ end }}
-            {{ with .Params.categories }}<span class="blog-row-cats">{{ delimit . " · " }}</span>{{ end }}
+            {{ with .Params.categories }}<span class="blog-row-cats">{{ range $i, $cat := . }}{{ if gt $i 0 }} · {{ end }}{{ with site.GetPage (printf "/categories/%s" $cat) }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ else }}{{ $cat }}{{ end }}{{ end }}</span>{{ end }}
           </div>
         </div>
         <span class="blog-row-arrow">←</span>
