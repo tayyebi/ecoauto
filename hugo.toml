@@ -52,6 +52,11 @@ enableGitInfo = false
   weight = 5
 
 [[menus.main]]
+  name = 'تامین‌کنندگان'
+  url = '/vendors/'
+  weight = 6
+
+[[menus.main]]
   name = 'وبلاگ'
   url = '/blog/'
-  weight = 6
+  weight = 7
