@@ -1,0 +1,17 @@
+{{- $result := "تماس بگیرید" -}}
+{{- if and .Params.price_amount (gt .Params.price_amount 0) -}}
+  {{- $result = lang.FormatNumber 0 .Params.price_amount -}}
+{{- else if .Params.price -}}
+  {{- $digits := delimit (findRE "[0-9]+" .Params.price) "" -}}
+  {{- if $digits -}}
+    {{- $num := $digits | int -}}
+    {{- if gt $num 0 -}}
+      {{- $result = lang.FormatNumber 0 $num -}}
+    {{- else -}}
+      {{- $result = .Params.price -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $result = .Params.price -}}
+  {{- end -}}
+{{- end -}}
+{{- $result -}}

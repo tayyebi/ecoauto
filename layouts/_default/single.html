@@ -22,8 +22,9 @@
       </p>
       {{ end }}
       {{ end }}
-      {{ with .Params.price }}
-      <p style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">قیمت: {{ . }} ریال</p>
+      {{ $productPrice := partial "format-price.html" . }}
+      {{ if ne $productPrice "تماس بگیرید" }}
+      <p style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">قیمت: {{ $productPrice }} ریال</p>
       {{ end }}
       <div class="content-body">
         {{ .Content }}
@@ -67,7 +68,7 @@
               <h3 class="product-title">{{ .Title }}</h3>
               <p class="product-desc">{{ .Params.description | default "" }}</p>
               <div class="product-footer">
-                <span class="product-price">{{ .Params.price | default "تماس بگیرید" }}{{ with .Params.price }} ریال{{ end }}</span>
+                <span class="product-price">{{ partial "format-price.html" . }}{{ with .Params.price }} ریال{{ end }}</span>
                 <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
               </div>
             </div>
