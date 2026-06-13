@@ -1,4 +1,5 @@
 ---
+image: "/images/break-pads-afagh-khodro-motor.jpg"
 title: "لنت الیگ جلو مزداMB12) CX5)"
 description: "لنت الیگ جلو مزداMB12) CX5) - نائو سرامیک (-)"
 vendor: "آفاق-خودرو-موتور"

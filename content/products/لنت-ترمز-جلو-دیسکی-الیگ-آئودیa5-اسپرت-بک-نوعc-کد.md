@@ -1,4 +1,5 @@
 ---
+image: "/images/break-pads-afagh-khodro-motor.jpg"
 title: "لنت ترمز جلو دیسکی الیگ آئودیA5 اسپرت بک نوعC کد"
 description: "لنت ترمز جلو دیسکی الیگ آئودیA5 اسپرت بک نوعC کد - نائو سرامیک (NAO Ceramic / VA07)"
 vendor: "آفاق-خودرو-موتور"

@@ -5,6 +5,10 @@ sku: "WZ-F150-GPS"
 brand: "وایزر"
 category: "امنیت و رفاهی"
 country_of_origin: "چین"
+image: "/images/products/wizer-car-gps-tracker-f150.jpg"
+price_amount: 0
+price_currency: "IRR"
+gtin: ""
 ---
 
 <p><span>دیاب خودرو وایزر مدل F150 یکی از پیشرفته‌ترین و پرفروش‌ترین دستگاه‌های امنیتی برای وسایل نقلیه در ایران است که با امکانات متنوع و طراحی حرفه‌ای، امنیت خودروی شما را به سطح بالایی ارتقا می‌دهد.</span></p>

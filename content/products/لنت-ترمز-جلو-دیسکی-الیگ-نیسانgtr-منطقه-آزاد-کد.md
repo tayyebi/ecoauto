@@ -1,4 +1,5 @@
 ---
+image: "/images/break-pads-afagh-khodro-motor.jpg"
 title: "لنت ترمز جلو دیسکی الیگ نیسانGTR منطقه آزاد کد"
 description: "لنت ترمز جلو دیسکی الیگ نیسانGTR منطقه آزاد کد - نائو سرامیک (NAO Ceramic / ZA46)"
 vendor: "آفاق-خودرو-موتور"

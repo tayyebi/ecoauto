@@ -5,6 +5,10 @@ sku: "T21-8107031"
 brand: "چری / مدیران خودرو"
 category: "قطعات سیستم تهویه"
 country_of_origin: "چین"
+image: "/images/products/fan-resistor-t21-8107031.jpg"
+price_amount: 0
+price_currency: "IRR"
+gtin: ""
 ---
 
 <p><span><strong>مقاومت فن بخاری</strong> یکی از قطعات کلیدی در سیستم تهویه خودروهای چری مانند تیگو ۵، تیگو ۷، تیگو ۸ و MVM X55 است.</span> <span>این قطعه با تنظیم سرعت فن بخاری، نقش مهمی در کنترل دمای داخل کابین ایفا می‌کند.</span></p>

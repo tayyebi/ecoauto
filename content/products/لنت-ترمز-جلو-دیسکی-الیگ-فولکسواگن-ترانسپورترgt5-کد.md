@@ -1,4 +1,5 @@
 ---
+image: "/images/break-pads-afagh-khodro-motor.jpg"
 title: "لنت ترمز جلو دیسکی الیگ فولکسواگن ترانسپورتر,GT5 کد"
 description: "لنت ترمز جلو دیسکی الیگ فولکسواگن ترانسپورتر,GT5 کد - نائو سرامیک (NAO Ceramic / VA14)"
 vendor: "آفاق-خودرو-موتور"

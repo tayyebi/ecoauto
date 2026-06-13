@@ -13,8 +13,17 @@
       {{ with .Params.image }}
       <img src="{{ . }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
       {{ end }}
+      {{ with .Params.vendor }}
+      {{ $vendorPage := site.GetPage (printf "/vendors/%s" .) }}
+      {{ with $vendorPage }}
+      <p style="margin-bottom:1rem;">
+        <span style="color:var(--ev-text-muted);font-size:0.9rem;">تامین‌کننده:</span>
+        <a href="{{ .RelPermalink }}" style="font-family:var(--ev-font-heading);font-size:1.1rem;">{{ .Title }}</a>
+      </p>
+      {{ end }}
+      {{ end }}
       {{ with .Params.price }}
-      <p style="font-family:var(--font-heading);font-size:1.5rem;color:var(--accent);margin-bottom:1rem;">قیمت: {{ . }}</p>
+      <p style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">قیمت: {{ . }} ریال</p>
       {{ end }}
       <div class="content-body">
         {{ .Content }}
@@ -45,6 +54,28 @@
       <div class="content-body">
         {{ .Content }}
       </div>
+      {{ $vendorSlug := .File.ContentBaseName }}
+      {{ $vendorProducts := where site.RegularPages "Params.vendor" $vendorSlug }}
+      {{ if gt (len $vendorProducts) 0 }}
+      <div style="margin-top:2rem;">
+        <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">محصولات این تامین‌کننده</h2>
+        <div class="products-grid">
+          {{ range $vendorProducts }}
+          <article class="product-card">
+            {{ with .Params.image }}<div class="product-image"><img src="{{ . }}" alt="{{ $.Title }}"></div>{{ end }}
+            <div class="product-body">
+              <h3 class="product-title">{{ .Title }}</h3>
+              <p class="product-desc">{{ .Params.description | default "" }}</p>
+              <div class="product-footer">
+                <span class="product-price">{{ .Params.price | default "تماس بگیرید" }}{{ with .Params.price }} ریال{{ end }}</span>
+                <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
+              </div>
+            </div>
+          </article>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
     </div>
     {{ else }}
     <div class="content-page">
