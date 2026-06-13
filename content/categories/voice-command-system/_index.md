@@ -1,4 +1,5 @@
 ---
+parent: "entertainment-system"
 title: "دستیار و فرمان صوتی"
 description: "محصولات و مطالب مرتبط با دستیار و فرمان صوتی"
 ---

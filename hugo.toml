@@ -3,6 +3,7 @@ locale = 'fa-IR'
 defaultContentLanguage = 'fa'
 title = 'اکواتو | قطعات خودروهای برقی'
 enableGitInfo = false
+paginate = 10
 
 [markup.goldmark.renderer]
   unsafe = true

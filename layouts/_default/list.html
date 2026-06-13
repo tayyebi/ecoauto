@@ -23,27 +23,61 @@
       </article>
       {{ end }}
     </div>
+
     {{ else if eq .Section "categories" }}
     <div class="categories-grid">
       {{ range .Pages }}
-      <div class="category-card">
+      <a href="{{ .RelPermalink }}" class="category-card">
         <span class="category-icon">{{ .Params.icon | default "⚡" }}</span>
         <h3 class="category-title">{{ .Title }}</h3>
         <p class="product-desc">{{ .Params.description | default "" }}</p>
         <span class="category-count">{{ len .Pages }} محصول</span>
-      </div>
+      </a>
       {{ end }}
     </div>
+
     {{ else if eq .Section "vendors" }}
     <div class="vendors-grid">
       {{ range .Pages }}
-      <article class="vendor-card">
+      <a href="{{ .RelPermalink }}" class="vendor-card">
         <h3 class="vendor-title">{{ .Title }}</h3>
         <p class="vendor-desc">{{ .Params.description | default "" }}</p>
-        <a href="{{ .RelPermalink }}" class="vendor-link">جزئیات</a>
-      </article>
+        <div class="vendor-meta">
+          {{ with .Params.phone }}<span class="vendor-phone" dir="ltr">📞 {{ . }}</span>{{ end }}
+          {{ with .Params.email }}<span class="vendor-email">✉️ {{ . }}</span>{{ end }}
+        </div>
+      </a>
       {{ end }}
     </div>
+
+    {{ else if eq .Section "blog" }}
+    <div class="blog-list">
+      {{ range .Paginator.Pages }}
+      <a href="{{ .RelPermalink }}" class="blog-row-card">
+        <div class="blog-row-content">
+          <h3 class="blog-row-title">{{ .Title }}</h3>
+          <p class="blog-row-desc">{{ .Params.description | default "" }}</p>
+          <div class="blog-row-meta">
+            {{ with .Params.date }}<span class="blog-row-date">{{ .Format "2006-01-02" }}</span>{{ end }}
+            {{ with .Params.categories }}<span class="blog-row-cats">{{ delimit . " · " }}</span>{{ end }}
+          </div>
+        </div>
+        <span class="blog-row-arrow">←</span>
+      </a>
+      {{ end }}
+    </div>
+    {{ if gt .Paginator.TotalPages 1 }}
+    <nav class="pagination">
+      {{ if .Paginator.HasPrev }}
+      <a href="{{ .Paginator.Prev.URL }}" class="pagination-prev">صفحه قبل</a>
+      {{ end }}
+      <span class="pagination-info">صفحه {{ .Paginator.PageNumber }} از {{ .Paginator.TotalPages }}</span>
+      {{ if .Paginator.HasNext }}
+      <a href="{{ .Paginator.Next.URL }}" class="pagination-next">صفحه بعد</a>
+      {{ end }}
+    </nav>
+    {{ end }}
+
     {{ else }}
     <div class="content-body">
       {{ .Content }}

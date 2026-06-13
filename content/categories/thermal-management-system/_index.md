@@ -1,4 +1,5 @@
 ---
+parent: "secondary-component"
 title: "سامانه‌ی مدیریت حرارت"
 description: "محصولات و مطالب مرتبط با سامانه‌ی مدیریت حرارت"
 ---

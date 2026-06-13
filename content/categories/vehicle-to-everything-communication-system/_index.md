@@ -1,4 +1,5 @@
 ---
+parent: "networking-and-communication"
 title: "سامانه‌س ارتباط V2X"
 description: "محصولات و مطالب مرتبط با سامانه‌س ارتباط V2X"
 ---

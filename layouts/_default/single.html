@@ -19,6 +19,32 @@
         {{ .Content }}
       </div>
     </div>
+    {{ else if eq .Section "vendors" }}
+    <div class="content-page">
+      <div class="vendor-contact-grid">
+        {{ with .Params.email }}
+        <div class="vendor-contact-item">
+          <span class="vendor-contact-label">ایمیل</span>
+          <a href="mailto:{{ . }}" class="vendor-contact-value">{{ . }}</a>
+        </div>
+        {{ end }}
+        {{ with .Params.phone }}
+        <div class="vendor-contact-item">
+          <span class="vendor-contact-label">تلفن</span>
+          <a href="tel:{{ . }}" class="vendor-contact-value" dir="ltr">{{ . }}</a>
+        </div>
+        {{ end }}
+        {{ with .Params.website }}
+        <div class="vendor-contact-item">
+          <span class="vendor-contact-label">وبسایت</span>
+          <a href="{{ if not (hasPrefix . "http") }}https://{{ . }}{{ else }}{{ . }}{{ end }}" class="vendor-contact-value" target="_blank" rel="noopener">{{ . }}</a>
+        </div>
+        {{ end }}
+      </div>
+      <div class="content-body">
+        {{ .Content }}
+      </div>
+    </div>
     {{ else }}
     <div class="content-page">
       <div class="content-body">

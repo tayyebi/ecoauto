@@ -1,4 +1,5 @@
 ---
+parent: "driver-assistance-and-monitoring"
 title: "سامانه‌ی تشخیص خوب‌آلودگی راننده"
 description: "محصولات و مطالب مرتبط با سامانه‌ی تشخیص خوب‌آلودگی راننده"
 ---

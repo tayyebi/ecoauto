@@ -1,4 +1,5 @@
 ---
+parent: "advanced-driver-assistance-system"
 title: "سامانه‌ی هشدار خروج از خط"
 description: "محصولات و مطالب مرتبط با سامانه‌ی هشدار خروج از خط"
 ---

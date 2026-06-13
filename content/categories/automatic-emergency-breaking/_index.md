@@ -1,4 +1,5 @@
 ---
+parent: "advanced-driver-assistance-system"
 title: "ترمز اضطراری خودکار"
 description: "محصولات و مطالب مرتبط با ترمز اضطراری خودکار"
 ---

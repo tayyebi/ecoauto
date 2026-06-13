@@ -1,0 +1,76 @@
+<aside class="site-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="{{ .Site.Home.RelPermalink }}" class="sidebar-logo">
+      <img src="{{ "images/logo.png" | relURL }}" alt="{{ .Site.Title }}">
+    </a>
+    <button class="sidebar-close" id="sidebar-close" aria-label="بستن منو">✕</button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      {{ $currentPage := . }}
+      {{ range .Site.Menus.main }}
+      <li><a href="{{ .URL }}" {{ if $currentPage.IsMenuCurrent "main" . }}class="active"{{ end }}>{{ .Name }}</a></li>
+      {{ end }}
+    </ul>
+  </nav>
+
+  <div class="sidebar-categories">
+    <h3 class="sidebar-heading">دسته‌بندی‌ها</h3>
+    {{ $catSection := site.GetPage "categories" }}
+    {{ with $catSection }}
+    {{ $allCats := .Pages }}
+    <ul class="sidebar-cat-list">
+      {{ range $allCats }}
+        {{ if not .Params.parent }}
+        <li class="sidebar-cat-item">
+          <div class="sidebar-cat-row">
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            {{ $mySlug := .File.ContentBaseName }}
+            {{ $hasChildren := false }}
+            {{ range $allCats }}
+              {{ if eq .Params.parent $mySlug }}
+                {{ $hasChildren = true }}
+              {{ end }}
+            {{ end }}
+            {{ if $hasChildren }}
+            <button class="sidebar-cat-toggle" data-target="sub-{{ $mySlug }}" aria-label="بازشدن">‹</button>
+            {{ end }}
+          </div>
+          {{ if $hasChildren }}
+          <ul class="sidebar-subcats" id="sub-{{ $mySlug }}">
+            {{ range $allCats }}
+              {{ if eq .Params.parent $mySlug }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+              {{ end }}
+            {{ end }}
+          </ul>
+          {{ end }}
+        </li>
+        {{ end }}
+      {{ end }}
+    </ul>
+    {{ end }}
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<script>
+document.getElementById('sidebar-close')?.addEventListener('click', function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+});
+document.getElementById('sidebar-overlay')?.addEventListener('click', function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+});
+document.querySelectorAll('.sidebar-cat-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var target = document.getElementById(this.dataset.target);
+    if (target) {
+      target.classList.toggle('expanded');
+      this.classList.toggle('rotated');
+    }
+  });
+});
+</script>

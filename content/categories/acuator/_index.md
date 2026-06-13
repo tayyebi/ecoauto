@@ -1,4 +1,5 @@
 ---
+parent: "body-and-structure"
 title: "عملگر و آکچویتور"
 description: "محصولات و مطالب مرتبط با عملگر و آکچویتور"
 ---
