@@ -204,16 +204,21 @@ img {
   gap: 1.5rem;
 }
 .product-card {
+  display: flex;
+  flex-direction: column;
   background: var(--ev-bg-raised);
   border-radius: var(--ev-radius-md);
   overflow: hidden;
   border: 1px solid var(--ev-border-subtle);
   transition: transform var(--ev-transition), box-shadow var(--ev-transition), border-color var(--ev-transition);
+  text-decoration: none;
+  color: inherit;
 }
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--ev-shadow-glow);
   border-color: var(--ev-border-brand);
+  color: inherit;
 }
 .product-image {
   width: 100%;
@@ -249,16 +254,6 @@ img {
   font-family: var(--ev-font-heading);
   font-size: 1.25rem;
   color: var(--ev-brand);
-}
-.product-link {
-  font-size: 0.85rem;
-  color: var(--ev-text-muted);
-  border-bottom: 1px solid transparent;
-  transition: color var(--ev-transition), border-color var(--ev-transition);
-}
-.product-link:hover {
-  color: var(--ev-brand);
-  border-bottom-color: var(--ev-brand);
 }
 
 /* Vendor Cards */

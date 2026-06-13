@@ -61,23 +61,49 @@
       {{ $vendorSlug := .File.ContentBaseName }}
       {{ $vendorProducts := where site.RegularPages "Params.vendors" "intersect" (slice $vendorSlug) }}
       {{ if gt (len $vendorProducts) 0 }}
+      {{ $perPage := 12 }}
+      {{ $total := len $vendorProducts }}
+      {{ $totalPages := math.Ceil (div (float $total) (float $perPage)) }}
+      {{ $currentPage := 1 }}
+      {{ with .Params.page }}
+        {{ $currentPage = . }}
+      {{ end }}
+      {{ $start := mul (sub $currentPage 1) $perPage }}
+      {{ $end := add $start $perPage }}
+      {{ if gt $end $total }}{{ $end = $total }}{{ end }}
+      {{ $paginated := slice }}
+      {{ range $i, $p := $vendorProducts }}
+        {{ if and (ge $i $start) (lt $i $end) }}
+          {{ $paginated = $paginated | append $p }}
+        {{ end }}
+      {{ end }}
       <div style="margin-top:2rem;">
-        <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">محصولات این تامین‌کننده</h2>
+        <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:0.5rem;">محصولات این تامین‌کننده ({{ $total }})</h2>
         <div class="products-grid">
-          {{ range $vendorProducts }}
-          <article class="product-card">
+          {{ range $paginated }}
+          <a href="{{ .RelPermalink }}" class="product-card">
             {{ with .Params.image }}<div class="product-image"><img src="{{ . }}" alt="{{ $.Title }}"></div>{{ end }}
             <div class="product-body">
               <h3 class="product-title">{{ .Title }}</h3>
               <p class="product-desc">{{ .Params.description | default "" }}</p>
               <div class="product-footer">
-                <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}<a href="/contact/">{{ $p }}</a>{{ else }}{{ $p }} ریال{{ end }}</span>
-                <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
+                <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}{{ $p }}{{ else }}{{ $p }} ریال{{ end }}</span>
               </div>
             </div>
-          </article>
+          </a>
           {{ end }}
         </div>
+        {{ if gt $totalPages 1 }}
+        <nav class="pagination">
+          {{ if gt $currentPage 1 }}
+          <a href="{{ .RelPermalink }}?page={{ sub $currentPage 1 }}" class="pagination-prev">صفحه قبل</a>
+          {{ end }}
+          <span class="pagination-info">صفحه {{ $currentPage }} از {{ $totalPages }}</span>
+          {{ if lt $currentPage $totalPages }}
+          <a href="{{ .RelPermalink }}?page={{ add $currentPage 1 }}" class="pagination-next">صفحه بعد</a>
+          {{ end }}
+        </nav>
+        {{ end }}
       </div>
       {{ end }}
     </div>
