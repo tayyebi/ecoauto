@@ -3,7 +3,7 @@ title: "سیستم‌های پایداری دینامیکی"
 date: "2025-01-07"
 description: "سیستم‌های پایداری دینامیکی (ESC) سیستم‌های پایداری دینامیکی (Electronic Stability Control - ESC) یکی از مهم‌ترین سیستم‌های ایمنی در خودروهای مدرن هستند که برای جلوگیری از لغزش و واژگونی خودرو در..."
 categories:
-  - "electric-vehicle"
+  - "electronic-stability-control-system"
 ---
 
 <h2>سیستم‌های پایداری دینامیکی (ESC)</h2>

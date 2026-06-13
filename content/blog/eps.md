@@ -3,7 +3,7 @@ title: "سیستم فرمان برقی"
 date: "2025-01-06"
 description: "سیستم فرمان برقی (EPS) سیستم فرمان برقی (Electric Power Steering) یکی از فناوری‌های پیشرفته‌ای است که در Tiggo 8 Pro e به کار رفته است. این سیستم جایگزین فرمان‌های سنتی هیدرولیکی شده و با استفاده از.."
 categories:
-  - "electric-vehicle"
+  - "core-component"
 ---
 
 <h2>سیستم فرمان برقی (EPS)</h2>

@@ -3,7 +3,7 @@ title: "سیستم ضد قفل ترمز"
 date: "2025-03-17"
 description: "سیستم ضد قفل ترمز (ABS): مفهوم و اهمیت سیستم ضد قفل ترمز یا ABS (Anti-lock Braking System) یکی از پیشرفته‌ترین فناوری‌های ایمنی در خودروها است که به جلوگیری از قفل شدن چرخ‌ها در هنگام ترمزگیری شدید..."
 categories:
-  - "electric-vehicle"
+  - "electronic-stability-control-system"
 ---
 
 <h3><strong>سیستم ضد قفل ترمز (ABS): مفهوم و اهمیت</strong></h3>

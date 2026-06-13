@@ -3,7 +3,7 @@ title: "سیستم تشخیص خستگی راننده"
 date: "2025-03-17"
 description: "سیستم تشخیص خستگی راننده: تعریف و نحوه عملکرد سیستم تشخیص خستگی راننده (Driver Fatigue Detection System) یکی از فناوری‌های پیشرفته ایمنی در خودروها است که به شناسایی علائم خستگی یا بی‌توجهی راننده..."
 categories:
-  - "electric-vehicle"
+  - "driver-drowsiness-detection-system"
 ---
 
 <h3><strong>سیستم تشخیص خستگی راننده: تعریف و نحوه عملکرد</strong></h3>

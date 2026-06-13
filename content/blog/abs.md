@@ -3,7 +3,7 @@ title: "ABS و ماژول ترمز"
 date: "2025-02-15"
 description: "ABS و ماژول ترمز چیست و چه کاربردی دارد؟ سیستم ABS (Anti-lock Braking System) یا سیستم ترمز ضد قفل یکی از مهم‌ترین فناوری‌های ایمنی خودرو است که از قفل شدن چرخ‌ها هنگام ترمزگیری شدید جلوگیری کرده و..."
 categories:
-  - "electric-vehicle"
+  - "electronic-stability-control-system"
 ---
 
 <h2>ABS و ماژول ترمز چیست و چه کاربردی دارد؟</h2>

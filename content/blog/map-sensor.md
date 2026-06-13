@@ -3,7 +3,7 @@ title: "سنسور فشار مانیفولد"
 date: "2025-02-08"
 description: "سنسور فشار مانیفولد چیست و چه کاربردی دارد؟ سنسور فشار مانیفولد یا MAP Sensor (Manifold Absolute Pressure Sensor) یکی از اجزای مهم در سیستم تزریق سوخت الکترونیکی (EFI) است که وظیفه اندازه‌گیری فشار..."
 categories:
-  - "electric-vehicle"
+  - "sensor-and-safety-system"
 ---
 
 <h2>سنسور فشار مانیفولد چیست و چه کاربردی دارد؟</h2>

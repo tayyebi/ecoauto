@@ -3,7 +3,7 @@ title: "سنسور دریچه گاز چیست و چگونه عمل می‌کند
 date: "2025-05-15"
 description: "سنسور دریچه گاز (TPS): نقشی حیاتی در عملکرد و راندمان خودروی شما سنسور دریچه گاز (Throttle Position Sensor یا TPS) یکی از اجزای کلیدی در سیستم‌های مدیریت موتور الکترونیکی خودروهای مدرن است. این قطعه.."
 categories:
-  - "electric-vehicle"
+  - "sensor-and-safety-system"
 ---
 
 <hr/>

@@ -3,7 +3,7 @@ title: "بازوی فرمان"
 date: "2025-04-14"
 description: "بازوی فرمان (Idler Arm) و نقش آن در سیستم هدایت خودرو بازوی فرمان یا Idler Arm یکی از اجزای مکمل سیستم فرمان در خودروهایی با جعبه فرمان ساچمه‌ای (Recirculating Ball) است. این قطعه معمولاً در سمت..."
 categories:
-  - "electric-vehicle"
+  - "core-component"
 ---
 
 <h2>بازوی فرمان (Idler Arm) و نقش آن در سیستم هدایت خودرو</h2>

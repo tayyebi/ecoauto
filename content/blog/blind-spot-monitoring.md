@@ -3,7 +3,7 @@ title: "سیستم‌های هشدار نقاط کور"
 date: "2025-01-07"
 description: "سیستم‌های هشدار نقاط کور (Blind Spot Monitoring) سیستم‌های هشدار نقاط کور یکی از مهم‌ترین فناوری‌های ایمنی خودروهای مدرن هستند که به رانندگان کمک می‌کنند تا وجود خودروها یا موانع در نقاط کور آینه‌های."
 categories:
-  - "electric-vehicle"
+  - "driver-assistance-and-monitoring"
 ---
 
 <h2>سیستم‌های هشدار نقاط کور (Blind Spot Monitoring)</h2>
