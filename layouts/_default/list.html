@@ -8,6 +8,7 @@
 <section class="section">
   <div class="container">
     {{ if eq .Section "products" }}
+    {{ partial "itemlist-schema.html" . }}
     <div class="products-grid">
       {{ range .Pages }}
       <article class="product-card">

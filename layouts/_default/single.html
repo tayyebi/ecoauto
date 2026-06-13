@@ -8,6 +8,7 @@
 <section class="section">
   <div class="container">
     {{ if eq .Section "products" }}
+    {{ partial "product-schema.html" . }}
     <div class="content-page">
       {{ with .Params.image }}
       <img src="{{ . }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">

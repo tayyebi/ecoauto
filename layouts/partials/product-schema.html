@@ -1,0 +1,42 @@
+{{ $schema := dict "@context" "https://schema.org/" "@type" "Product" "name" .Title "url" .Permalink }}
+
+{{ with .Params.description }}
+  {{ $schema = merge $schema (dict "description" .) }}
+{{ end }}
+
+{{ with .Params.image }}
+  {{ $schema = merge $schema (dict "image" .) }}
+{{ end }}
+
+{{ with .Params.sku }}
+  {{ $schema = merge $schema (dict "sku" . "mpn" .) }}
+{{ end }}
+
+{{ with .Params.brand }}
+  {{ $schema = merge $schema (dict "brand" (dict "@type" "Brand" "name" .)) }}
+{{ end }}
+
+{{ with .Params.gtin }}
+  {{ $schema = merge $schema (dict "gtin" .) }}
+{{ end }}
+
+{{ with .Params.category }}
+  {{ $schema = merge $schema (dict "category" .) }}
+{{ end }}
+
+{{ $offer := dict "@type" "Offer" "url" .Permalink "priceCurrency" (.Params.price_currency | default "IRR") }}
+
+{{ if .Params.price_amount }}
+  {{ $offer = merge $offer (dict "price" (.Params.price_amount | string)) }}
+{{ end }}
+
+{{ $avail := .Params.availability | default "https://schema.org/InStock" }}
+{{ $offer = merge $offer (dict "availability" $avail) }}
+
+{{ $offer = merge $offer (dict "seller" (dict "@type" "Organization" "name" .Site.Title)) }}
+
+{{ $schema = merge $schema (dict "offers" $offer) }}
+
+<script type="application/ld+json">
+{{ $schema | jsonify (dict "indent" "  ") | safeJS }}
+</script>
