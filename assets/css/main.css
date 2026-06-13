@@ -46,43 +46,6 @@ img {
   padding: 0 20px;
 }
 
-/* Header */
-.site-header {
-  background: var(--ev-bg-raised);
-  color: var(--ev-text-primary);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 3px solid var(--ev-brand);
-  height: var(--ev-header-height);
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
-
-.header-logo img {
-  max-height: 52px;
-  width: auto;
-}
-.header-logo {
-  display: flex;
-  align-items: center;
-}
-
-.nav-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--ev-text-primary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
 /* Hero Section */
 .hero {
   background: var(--ev-bg-raised);
@@ -772,9 +735,6 @@ img {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .nav-toggle {
-    display: block;
-  }
   .site-sidebar {
     transform: translateX(100%);
     transition: transform 0.3s ease;
