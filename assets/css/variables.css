@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
-@import url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel@v3.4.0/dist/Sahel.css');
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/font-face.css');
 
 :root {
   /* Brand scale */
@@ -61,7 +61,7 @@
 
   /* Layout */
   --ev-font-heading: 'Lalezar', system-ui, sans-serif;
-  --ev-font-body:    'Sahel', system-ui, sans-serif;
+  --ev-font-body:    'Sahel VF', system-ui, sans-serif;
   --ev-max-width:    1200px;
   --ev-sidebar-width: 280px;
   --ev-transition:   200ms ease;
