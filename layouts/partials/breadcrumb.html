@@ -1,0 +1,31 @@
+{{ if not .IsHome }}
+{{- $crumbs := slice (dict "url" .Site.Home.RelPermalink "title" "خانه") -}}
+{{- if .IsSection -}}
+  {{- $crumbs = $crumbs | append (dict "title" .Title) -}}
+{{- else -}}
+  {{- with .Parent -}}
+    {{- if not .IsHome -}}
+      {{- $crumbs = $crumbs | append (dict "url" .RelPermalink "title" .Title) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq .Section "products" -}}
+    {{- $firstCat := index .Params.categories 0 | default "" -}}
+    {{- with $firstCat -}}
+      {{- with site.GetPage (printf "/categories/%s" .) -}}
+        {{- $crumbs = $crumbs | append (dict "url" .RelPermalink "title" .Title) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $crumbs = $crumbs | append (dict "title" .Title) -}}
+{{- end -}}
+<nav class="breadcrumb">
+  {{- range $i, $crumb := $crumbs -}}
+    {{- if gt $i 0 }}<span class="breadcrumb-sep">›</span>{{ end -}}
+    {{- if $crumb.url -}}
+      <a href="{{ $crumb.url }}">{{ $crumb.title }}</a>
+    {{- else -}}
+      <span class="breadcrumb-current">{{ $crumb.title }}</span>
+    {{- end -}}
+  {{- end -}}
+</nav>
+{{ end }}

@@ -8,6 +8,7 @@
   <div class="site-wrapper">
     {{ partial "header.html" . }}
     <main class="site-main">
+      {{ partial "breadcrumb.html" . }}
       {{ block "main" . }}{{ end }}
     </main>
     {{ partial "footer.html" . }}
