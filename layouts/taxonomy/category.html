@@ -7,21 +7,45 @@
 </section>
 <section class="section">
   <div class="container">
+    {{ $products := where .Pages "Section" "products" }}
+    {{ $posts := where .Pages "Section" "blog" }}
+
+    {{ if $products }}
+    <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">محصولات</h2>
     <div class="products-grid">
-      {{ range .Pages }}
+      {{ range $products }}
       <article class="product-card">
         <div class="product-image">{{ with .Params.image }}<img src="{{ . }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
         <div class="product-body">
           <h3 class="product-title">{{ .Title }}</h3>
           <p class="product-desc">{{ .Params.description | default "توضیحات محصول" }}</p>
           <div class="product-footer">
-            <span class="product-price">{{ .Params.price | default "تماس بگیرید" }}</span>
+            <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}<a href="/contact/">{{ $p }}</a>{{ else }}{{ $p }}{{ end }}</span>
             <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
           </div>
         </div>
       </article>
       {{ end }}
     </div>
+    {{ end }}
+
+    {{ if $posts }}
+    <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">مطالب</h2>
+    <div class="blog-list">
+      {{ range $posts }}
+      <a href="{{ .RelPermalink }}" class="blog-row-card">
+        <div class="blog-row-content">
+          <h3 class="blog-row-title">{{ .Title }}</h3>
+          <p class="blog-row-desc">{{ .Params.description | default "" }}</p>
+          <div class="blog-row-meta">
+            {{ with .Date }}<span class="blog-row-date">{{ .Format "2006-01-02" }}</span>{{ end }}
+          </div>
+        </div>
+        <span class="blog-row-arrow">←</span>
+      </a>
+      {{ end }}
+    </div>
+    {{ end }}
   </div>
 </section>
 {{ end }}

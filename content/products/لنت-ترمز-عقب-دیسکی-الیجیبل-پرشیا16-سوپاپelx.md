@@ -1,5 +1,6 @@
 ---
 image: "/images/break-pads-afagh-khodro-motor.jpg"
+categories: ["brake-pads"]
 title: "لنت ترمز عقب دیسکی الیجیبل پرشیا16 سوپاپELX"
 description: "لنت ترمز عقب دیسکی الیجیبل پرشیا16 سوپاپELX - کربن سرامیک (CARBON CERAMIC / AA02B)"
 vendor: "آفاق-خودرو-موتور"

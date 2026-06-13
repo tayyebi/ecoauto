@@ -1,5 +1,6 @@
 ---
 image: "/images/break-pads-afagh-khodro-motor.jpg"
+categories: ["brake-pads"]
 title: "لنت ترمز عقب دیسکی الیگ میتسوبیشیASX کد"
 description: "لنت ترمز عقب دیسکی الیگ میتسوبیشیASX کد - نائو سرامیک (NAO Ceramic / MA23)"
 vendor: "آفاق-خودرو-موتور"

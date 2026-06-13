@@ -1,5 +1,6 @@
 ---
 image: "/images/break-pads-afagh-khodro-motor.jpg"
+categories: ["brake-pads"]
 title: "لنت ترمز عقب دیسکی الیگ تویوتاCHR کد"
 description: "لنت ترمز عقب دیسکی الیگ تویوتاCHR کد - نائو سرامیک (NAO Ceramic / TA43)"
 vendor: "آفاق-خودرو-موتور"

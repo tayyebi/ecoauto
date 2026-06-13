@@ -1,5 +1,6 @@
 ---
 image: "/images/break-pads-afagh-khodro-motor.jpg"
+categories: ["brake-pads"]
 title: "لنت ترمز جلو دیسکی الیجیبل هیوندای سوناتاYF"
 description: "لنت ترمز جلو دیسکی الیجیبل هیوندای سوناتاYF - ریس سرامیک (RACE CERAMIC / HB16)"
 vendor: "آفاق-خودرو-موتور"

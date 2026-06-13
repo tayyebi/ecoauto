@@ -1,5 +1,6 @@
 ---
 image: "/images/break-pads-afagh-khodro-motor.jpg"
+categories: ["brake-pads"]
 title: "لنت ترمز جلو دیسکی الیجیبل رنو کولئوس جدید نوعB"
 description: "لنت ترمز جلو دیسکی الیجیبل رنو کولئوس جدید نوعB - کربن سرامیک (CARBON CERAMIC / NA30)"
 vendor: "آفاق-خودرو-موتور"

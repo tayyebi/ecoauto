@@ -68,7 +68,7 @@
               <h3 class="product-title">{{ .Title }}</h3>
               <p class="product-desc">{{ .Params.description | default "" }}</p>
               <div class="product-footer">
-                <span class="product-price">{{ partial "format-price.html" . }}{{ with .Params.price }} ریال{{ end }}</span>
+                <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}<a href="/contact/">{{ $p }}</a>{{ else }}{{ $p }} ریال{{ end }}</span>
                 <a href="{{ .RelPermalink }}" class="product-link">جزئیات بیشتر</a>
               </div>
             </div>
