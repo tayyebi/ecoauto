@@ -3,7 +3,8 @@ image: "/images/break-pads-afagh-khodro-motor.jpg"
 categories: ["brake-pads"]
 title: "لنت ترمز جلو دیسکی الیگ تویوتاCHR کد"
 description: "لنت ترمز جلو دیسکی الیگ تویوتاCHR کد - نائو سرامیک (NAO Ceramic / TA68)"
-vendor: "آفاق-خودرو-موتور"
+vendors:
+  - آفاق-خودرو-موتور
 material: "نائو سرامیک"
 material_en: "NAO Ceramic / TA68"
 price: "35990000"

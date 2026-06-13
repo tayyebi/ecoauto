@@ -3,7 +3,8 @@ image: "/images/break-pads-afagh-khodro-motor.jpg"
 categories: ["brake-pads"]
 title: "لنت ترمز جلو دیسکی الیگ هونداCRV نوعB کد"
 description: "لنت ترمز جلو دیسکی الیگ هونداCRV نوعB کد - نائو سرامیک (NAO Ceramic / HA52)"
-vendor: "آفاق-خودرو-موتور"
+vendors:
+  - آفاق-خودرو-موتور
 material: "نائو سرامیک"
 material_en: "NAO Ceramic / HA52"
 price: "35290000"

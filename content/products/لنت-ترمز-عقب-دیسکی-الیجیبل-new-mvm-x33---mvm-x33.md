@@ -3,7 +3,8 @@ image: "/images/break-pads-afagh-khodro-motor.jpg"
 categories: ["brake-pads"]
 title: "لنت ترمز عقب دیسکی الیجیبل NEW . MVM X33 - MVM X33"
 description: "لنت ترمز عقب دیسکی الیجیبل NEW . MVM X33 - MVM X33 - نائو سرامیک (NAO CERAMIC / LC16)"
-vendor: "آفاق-خودرو-موتور"
+vendors:
+  - آفاق-خودرو-موتور
 material: "نائو سرامیک"
 material_en: "NAO CERAMIC / LC16"
 price: "30990000"

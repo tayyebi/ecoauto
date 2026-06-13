@@ -13,14 +13,17 @@
       {{ with .Params.image }}
       <img src="{{ . }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
       {{ end }}
-      {{ with .Params.vendor }}
-      {{ $vendorPage := site.GetPage (printf "/vendors/%s" .) }}
-      {{ with $vendorPage }}
+      {{ with .Params.vendors }}
       <p style="margin-bottom:1rem;">
-        <span style="color:var(--ev-text-muted);font-size:0.9rem;">تامین‌کننده:</span>
-        <a href="{{ .RelPermalink }}" style="font-family:var(--ev-font-heading);font-size:1.1rem;">{{ .Title }}</a>
+        <span style="color:var(--ev-text-muted);font-size:0.9rem;">تامین‌کنندگان:</span>
+        {{ range $i, $v := . }}
+          {{ $vendorPage := site.GetPage (printf "/vendors/%s" $v) }}
+          {{ with $vendorPage }}
+            {{ if $i }}, {{ end }}
+            <a href="{{ .RelPermalink }}" style="font-family:var(--ev-font-heading);font-size:1.1rem;">{{ .Title }}</a>
+          {{ end }}
+        {{ end }}
       </p>
-      {{ end }}
       {{ end }}
       {{ $productPrice := partial "format-price.html" . }}
       {{ if ne $productPrice "تماس بگیرید" }}
@@ -56,7 +59,7 @@
         {{ .Content }}
       </div>
       {{ $vendorSlug := .File.ContentBaseName }}
-      {{ $vendorProducts := where site.RegularPages "Params.vendor" $vendorSlug }}
+      {{ $vendorProducts := where site.RegularPages "Params.vendors" "intersect" (slice $vendorSlug) }}
       {{ if gt (len $vendorProducts) 0 }}
       <div style="margin-top:2rem;">
         <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">محصولات این تامین‌کننده</h2>
