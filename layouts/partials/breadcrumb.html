@@ -18,6 +18,7 @@
   {{- end -}}
   {{- $crumbs = $crumbs | append (dict "title" .Title) -}}
 {{- end -}}
+<div class="breadcrumb-wrap">
 <nav class="breadcrumb">
   {{- range $i, $crumb := $crumbs -}}
     {{- if gt $i 0 }}<span class="breadcrumb-sep">›</span>{{ end -}}
@@ -28,4 +29,5 @@
     {{- end -}}
   {{- end -}}
 </nav>
+</div>
 {{ end }}
