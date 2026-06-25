@@ -255,6 +255,31 @@ img {
   font-size: 1.25rem;
   color: var(--ev-brand);
 }
+.product-card-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  flex: 1;
+}
+.product-card-link:hover {
+  color: inherit;
+}
+.add-to-cart-btn {
+  display: inline-block;
+  background: var(--ev-brand);
+  color: var(--ev-brand-on);
+  font-family: var(--ev-font-heading);
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--ev-radius-sm);
+  white-space: nowrap;
+  transition: background var(--ev-transition);
+}
+.add-to-cart-btn:hover {
+  background: var(--ev-brand-hover);
+  color: var(--ev-brand-on);
+}
 
 /* Vendor Cards */
 .vendors-grid {

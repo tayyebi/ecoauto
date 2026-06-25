@@ -29,6 +29,7 @@
       {{ if ne $productPrice "تماس بگیرید" }}
       <p style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">قیمت: {{ $productPrice }} ریال</p>
       {{ end }}
+      <a href="https://shop.ecoauto.ir/add?b64={{ (printf "https://www.ecoauto.ir%s" .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener" style="display:inline-block;margin-top:1rem;">افزودن به سبد خرید</a>
       <div class="content-body">
         {{ .Content }}
       </div>
@@ -81,16 +82,19 @@
         <h2 style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:0.5rem;">محصولات این تامین‌کننده ({{ $total }})</h2>
         <div class="products-grid">
           {{ range $paginated }}
-          <a href="{{ .RelPermalink }}" class="product-card">
-            {{ with .Params.image }}<div class="product-image"><img src="{{ . }}" alt="{{ $.Title }}"></div>{{ end }}
-            <div class="product-body">
-              <h3 class="product-title">{{ .Title }}</h3>
-              <p class="product-desc">{{ .Params.description | default "" }}</p>
-              <div class="product-footer">
-                <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}{{ $p }}{{ else }}{{ $p }} ریال{{ end }}</span>
+          <div class="product-card">
+            <a href="{{ .RelPermalink }}" class="product-card-link">
+              {{ with .Params.image }}<div class="product-image"><img src="{{ . }}" alt="{{ $.Title }}"></div>{{ end }}
+              <div class="product-body">
+                <h3 class="product-title">{{ .Title }}</h3>
+                <p class="product-desc">{{ .Params.description | default "" }}</p>
               </div>
+            </a>
+            <div class="product-footer">
+              <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}{{ $p }}{{ else }}{{ $p }} ریال{{ end }}</span>
+              <a href="https://shop.ecoauto.ir/add?b64={{ (printf "https://www.ecoauto.ir%s" .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener">افزودن به سبد خرید</a>
             </div>
-          </a>
+          </div>
           {{ end }}
         </div>
         {{ if gt $totalPages 1 }}

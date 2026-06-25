@@ -5,7 +5,7 @@
 {{ end }}
 
 {{ with .Params.image }}
-  {{ $schema = merge $schema (dict "image" .) }}
+  {{ $schema = merge $schema (dict "image" (. | absURL)) }}
 {{ end }}
 
 {{ with .Params.sku }}
@@ -26,9 +26,13 @@
 
 {{ $offer := dict "@type" "Offer" "url" .Permalink "priceCurrency" (.Params.price_currency | default "IRR") }}
 
+{{ $priceVal := "-1" }}
 {{ if .Params.price_amount }}
-  {{ $offer = merge $offer (dict "price" (.Params.price_amount | string)) }}
+  {{ $priceVal = .Params.price_amount | string }}
+{{ else if .Params.price }}
+  {{ $priceVal = .Params.price }}
 {{ end }}
+{{ $offer = merge $offer (dict "price" $priceVal) }}
 
 {{ $avail := .Params.availability | default "https://schema.org/InStock" }}
 {{ $offer = merge $offer (dict "availability" $avail) }}
