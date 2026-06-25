@@ -1,0 +1,8 @@
+services:
+  hugo:
+    build: .
+    ports:
+      - "9020:1313"
+    volumes:
+      - .:/site
+    restart: unless-stopped
