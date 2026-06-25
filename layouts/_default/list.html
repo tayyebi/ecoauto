@@ -13,7 +13,7 @@
       {{ range .Pages }}
       <div class="product-card">
         <a href="{{ .RelPermalink }}" class="product-card-link">
-          <div class="product-image">{{ with .Params.image }}<img src="{{ . }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
+          <div class="product-image">{{ with .Params.image }}<img src="{{ . | absURL }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
           <div class="product-body">
             <h3 class="product-title">{{ .Title }}</h3>
             <p class="product-desc">{{ .Params.description | default "توضیحات محصول" }}</p>

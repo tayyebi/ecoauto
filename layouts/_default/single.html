@@ -11,7 +11,7 @@
     {{ partial "product-schema.html" . }}
     <div class="content-page">
       {{ with .Params.image }}
-      <img src="{{ . }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
+      <img src="{{ . | absURL }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
       {{ end }}
       {{ with .Params.vendors }}
       <p style="margin-bottom:1rem;">
@@ -84,7 +84,7 @@
           {{ range $paginated }}
           <div class="product-card">
             <a href="{{ .RelPermalink }}" class="product-card-link">
-              {{ with .Params.image }}<div class="product-image"><img src="{{ . }}" alt="{{ $.Title }}"></div>{{ end }}
+              {{ with .Params.image }}<div class="product-image"><img src="{{ . | absURL }}" alt="{{ $.Title }}"></div>{{ end }}
               <div class="product-body">
                 <h3 class="product-title">{{ .Title }}</h3>
                 <p class="product-desc">{{ .Params.description | default "" }}</p>

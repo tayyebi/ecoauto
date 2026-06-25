@@ -12,16 +12,16 @@
       <div class="sitemap-group">
         <h2 class="sitemap-group-title">صفحات اصلی</h2>
         <ul class="sitemap-list">
-          <li><a href="/">صفحه اصلی</a></li>
+          <li><a href="{{ "/" | relLangURL }}">صفحه اصلی</a></li>
           {{ range where .Site.RegularPages "Section" "" }}
             {{ if not (eq .RelPermalink "/sitemap/") }}
             <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
             {{ end }}
           {{ end }}
-          <li><a href="/products/">محصولات</a></li>
-          <li><a href="/categories/">دسته‌بندی‌ها</a></li>
-          <li><a href="/vendors/">تامین‌کنندگان</a></li>
-          <li><a href="/blog/">وبلاگ</a></li>
+          <li><a href="{{ "/products/" | relLangURL }}">محصولات</a></li>
+          <li><a href="{{ "/categories/" | relLangURL }}">دسته‌بندی‌ها</a></li>
+          <li><a href="{{ "/vendors/" | relLangURL }}">تامین‌کنندگان</a></li>
+          <li><a href="{{ "/blog/" | relLangURL }}">وبلاگ</a></li>
         </ul>
       </div>
 
@@ -52,7 +52,7 @@
         </ul>
         {{ $productCount := len (where .Site.RegularPages "Section" "products") }}
         {{ if gt $productCount 50 }}
-        <p class="sitemap-more"><a href="/products/">نمایش همه {{ $productCount }} محصول ←</a></p>
+        <p class="sitemap-more"><a href="{{ "/products/" | relLangURL }}">نمایش همه {{ $productCount }} محصول ←</a></p>
         {{ end }}
       </div>
 
