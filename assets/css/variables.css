@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
-@import url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/font-face.css');
-
 :root {
   --ev-brand-50:     #FFF0EE;
   --ev-brand-100:    #FFD0C9;
@@ -33,7 +30,7 @@
   --ev-shadow-glow:   0 0 24px rgba(255, 75, 51, 0.15);
   --ev-shadow-charge: 0 0 20px rgba(0, 229, 195, 0.1);
 
-  --ev-font-heading: 'Lalezar', system-ui, sans-serif;
+  --ev-font-heading: 'Vazirmatn', system-ui, sans-serif;
   --ev-font-body:    'Sahel VF', system-ui, sans-serif;
   --ev-max-width:    1200px;
   --ev-sidebar-width: 280px;

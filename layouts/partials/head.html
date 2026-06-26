@@ -4,9 +4,10 @@
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
 {{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
 {{ if .IsHome }}<meta name="enamad" content="31342586" />{{ end }}
+{{ $cssFonts := resources.Get "css/fonts.css" | resources.Minify }}
 {{ $cssVars := resources.Get "css/variables.css" | resources.Minify }}
 {{ $cssMain := resources.Get "css/main.css" | resources.Minify }}
-{{ $css := slice $cssVars $cssMain | resources.Concat "css/bundle.css" | resources.Minify | resources.Fingerprint }}
+{{ $css := slice $cssFonts $cssVars $cssMain | resources.Concat "css/bundle.css" | resources.Minify | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 {{ partial "organization-schema.html" . }}
