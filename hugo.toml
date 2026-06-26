@@ -11,6 +11,7 @@ paginate = 10
 [params]
   description = 'فروشگاه تخصصی قطعات خودروهای برقی'
   rtl = true
+  productionURL = 'https://www.ecoauto.ir'
 
 [languages.fa]
   label = 'فارسی'

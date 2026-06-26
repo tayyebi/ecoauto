@@ -5,7 +5,7 @@
 {{ end }}
 
 {{ with .Params.image }}
-  {{ $schema = merge $schema (dict "image" (. | absURL)) }}
+  {{ $schema = merge $schema (dict "image" (. | printf "%s%s" site.Params.productionURL)) }}
 {{ end }}
 
 {{ with .Params.sku }}

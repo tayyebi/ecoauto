@@ -13,7 +13,7 @@
       {{ range .Pages }}
       <div class="product-card">
         <a href="{{ .RelPermalink }}" class="product-card-link">
-          <div class="product-image">{{ with .Params.image }}<img src="{{ . | absURL }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
+          <div class="product-image">{{ with .Params.image }}<img src="{{ . | printf "%s%s" site.Params.productionURL }}" alt="{{ $.Title }}">{{ else }}تصویر محصول{{ end }}</div>
           <div class="product-body">
             <h3 class="product-title">{{ .Title }}</h3>
             <p class="product-desc">{{ .Params.description | default "توضیحات محصول" }}</p>
@@ -21,7 +21,7 @@
         </a>
         <div class="product-footer">
           <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}{{ $p }}{{ else }}{{ $p }}{{ end }}</span>
-          <a href="https://shop.ecoauto.ir/add?b64={{ (printf "https://www.ecoauto.ir%s" .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener">افزودن به سبد خرید</a>
+          <a href="https://shop.ecoauto.ir/add?b64={{ (printf "%s%s" site.Params.productionURL .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener">افزودن به سبد خرید</a>
         </div>
       </div>
       {{ end }}

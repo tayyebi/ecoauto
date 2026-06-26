@@ -11,7 +11,7 @@
     {{ partial "product-schema.html" . }}
     <div class="content-page">
       {{ with .Params.image }}
-      <img src="{{ . | absURL }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
+      <img src="{{ . | printf "%s%s" site.Params.productionURL }}" alt="{{ $.Title }}" style="max-width:400px;border-radius:8px;margin-bottom:2rem;">
       {{ end }}
       {{ with .Params.vendors }}
       <p style="margin-bottom:1rem;">
@@ -29,7 +29,7 @@
       {{ if ne $productPrice "تماس بگیرید" }}
       <p style="font-family:var(--ev-font-heading);font-size:1.5rem;color:var(--ev-brand);margin-bottom:1rem;">قیمت: {{ $productPrice }} ریال</p>
       {{ end }}
-      <a href="https://shop.ecoauto.ir/add?b64={{ (printf "https://www.ecoauto.ir%s" .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener" style="display:inline-block;margin-top:1rem;">افزودن به سبد خرید</a>
+      <a href="https://shop.ecoauto.ir/add?b64={{ (printf "%s%s" site.Params.productionURL .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener" style="display:inline-block;margin-top:1rem;">افزودن به سبد خرید</a>
       <div class="content-body">
         {{ .Content }}
       </div>
@@ -84,7 +84,7 @@
           {{ range $paginated }}
           <div class="product-card">
             <a href="{{ .RelPermalink }}" class="product-card-link">
-              {{ with .Params.image }}<div class="product-image"><img src="{{ . | absURL }}" alt="{{ $.Title }}"></div>{{ end }}
+              {{ with .Params.image }}<div class="product-image"><img src="{{ . | printf "%s%s" site.Params.productionURL }}" alt="{{ $.Title }}"></div>{{ end }}
               <div class="product-body">
                 <h3 class="product-title">{{ .Title }}</h3>
                 <p class="product-desc">{{ .Params.description | default "" }}</p>
@@ -92,7 +92,7 @@
             </a>
             <div class="product-footer">
               <span class="product-price">{{ $p := partial "format-price.html" . }}{{ if eq $p "تماس بگیرید" }}{{ $p }}{{ else }}{{ $p }} ریال{{ end }}</span>
-              <a href="https://shop.ecoauto.ir/add?b64={{ (printf "https://www.ecoauto.ir%s" .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener">افزودن به سبد خرید</a>
+              <a href="https://shop.ecoauto.ir/add?b64={{ (printf "%s%s" site.Params.productionURL .RelPermalink) | base64Encode }}" class="add-to-cart-btn" target="_blank" rel="noopener">افزودن به سبد خرید</a>
             </div>
           </div>
           {{ end }}
