@@ -37,6 +37,9 @@
 {{ $avail := .Params.availability | default "https://schema.org/InStock" }}
 {{ $offer = merge $offer (dict "availability" $avail) }}
 
+{{ $invLevel := .Params.inventory_level | default 0 }}
+{{ $offer = merge $offer (dict "inventoryLevel" (dict "@type" "QuantitativeValue" "value" ($invLevel | int))) }}
+
 {{ $offer = merge $offer (dict "seller" (dict "@type" "Organization" "name" .Site.Title)) }}
 
 {{ $schema = merge $schema (dict "offers" $offer) }}
