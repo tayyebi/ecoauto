@@ -42,10 +42,21 @@ fi
 # Server system schemas are never part of an installation backup.
 IGNORED="'information_schema','mysql','performance_schema','sys'"
 
+# DECISION (infra): MariaDB 11 exposes `mariadb`/`mariadb-dump` and keeps
+# `mysqldump` only as a compatibility symlink - there is no `mysql` at all.
+# Probe inside the container so this works against either image.
+CLIENT=$($COMPOSE exec -T db sh -c 'command -v mariadb || command -v mysql' | tr -d '\r')
+DUMPER=$($COMPOSE exec -T db sh -c 'command -v mariadb-dump || command -v mysqldump' | tr -d '\r')
+
+if [ -z "$CLIENT" ] || [ -z "$DUMPER" ]; then
+    echo "error: no MariaDB client tools inside the db container" >&2
+    exit 1
+fi
+
 echo "dumping every store database into ${OUT}"
 
 DATABASES="$($COMPOSE exec -T -e MYSQL_PWD="$RUN_PASS" db \
-    mysql -u "$RUN_USER" -N -B \
+    "$CLIENT" -u "$RUN_USER" -N -B \
     -e "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN (${IGNORED}) ORDER BY schema_name" \
     2>/dev/null | tr -d '\r' | tr '\n' ' ')"
 
@@ -60,9 +71,11 @@ echo "  databases: ${DATABASES}"
 # keeps the system schemas out while still emitting CREATE DATABASE statements,
 # so a restore on a fresh server is a single `gunzip | mysql`.
 $COMPOSE exec -T -e MYSQL_PWD="$RUN_PASS" db \
-    mysqldump -u "$RUN_USER" \
+    "$DUMPER" -u "$RUN_USER" \
     --single-transaction --quick --skip-lock-tables --databases $DATABASES \
     | gzip > "$OUT/store-${STAMP}.sql.gz"
 
 echo "done: $(du -h "$OUT/store-${STAMP}.sql.gz" | cut -f1) in ${OUT}/store-${STAMP}.sql.gz"
-echo "restore with: gunzip -c ${OUT}/store-${STAMP}.sql.gz | docker compose exec -T db mysql -u root -p"
+# Avoid `-p` on the restore line: it prompts for a password the container
+# already holds, and the prompt is what makes people paste secrets into a shell.
+echo "restore with: gunzip -c ${OUT}/store-${STAMP}.sql.gz | ./bin/db-restore"

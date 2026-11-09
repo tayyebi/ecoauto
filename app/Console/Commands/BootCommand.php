@@ -100,15 +100,34 @@ final class BootCommand extends Command
 
     private function migrate(): void
     {
-        $options = ['--force' => true];
+        $landlord = config('store.landlord_connection');
 
-        if ($this->option('force')) {
-            $options['--path'] = 'database/migrations/landlord';
-        }
+        // DECISION (db): the landlord migrations are always scoped with --path.
+        // Without it, `migrate` also picks up database/migrations/tenant and
+        // tries to build storefront tables in the landlord database.
+        $path = (string) config('database.migration_paths.landlord', database_path('migrations/landlord'));
 
-        $this->components->task('Migrating the landlord schema', function () use ($options) {
-            Artisan::call('migrate', $options + ['--database' => config('store.landlord_connection')]);
+        $this->components->task('Migrating the landlord schema', function () use ($landlord, $path) {
+            Artisan::call('migrate', [
+                '--database' => $landlord,
+                '--path' => $this->relativePath($path),
+                '--force' => true,
+            ]);
         });
+    }
+
+    /**
+     * `--path` resolves against the application base path, so an absolute path
+     * from config has to be made relative or the command looks for a directory
+     * literally called `/app/database/...`.
+     */
+    private function relativePath(string $absolute): string
+    {
+        $base = rtrim(base_path(), '/').'/';
+
+        return str_starts_with($absolute, $base)
+            ? substr($absolute, strlen($base))
+            : $absolute;
     }
 
     /**

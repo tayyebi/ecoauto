@@ -1,0 +1,61 @@
+#!/bin/sh
+# Restore a dump produced by ./bin/db-backup.
+#
+# Usage: ./bin/db-restore [data/backups/store-<stamp>.sql.gz]
+#        ./bin/db-backup | ./bin/db-restore -     (reads stdin)
+#
+# DECISION (infra): restore is a script rather than a documented `gunzip | docker
+# compose exec ... mysql -u root -p` pipeline. That pipeline prompts for a
+# password the container already holds in MARIADB_ROOT_PASSWORD, which is how
+# people end up pasting secrets into an interactive shell. This reads the
+# password from .env and never prints it.
+
+set -eu
+
+cd "$(dirname "$0")/.."
+
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE="docker compose"
+else
+    COMPOSE="docker-compose"
+fi
+
+env_value() {
+    grep -E "^$1=" .env 2>/dev/null | tail -n1 | cut -d= -f2- || true
+}
+
+DUMP="${1:-}"
+
+if [ -z "$DUMP" ]; then
+    # Default to the newest backup on disk.
+    DUMP="$(ls -1t data/backups/*.sql.gz 2>/dev/null | head -n1 || true)"
+
+    if [ -z "$DUMP" ]; then
+        echo "error: no dump given and none found in data/backups" >&2
+        echo "usage: ./bin/db-restore <file.sql.gz>" >&2
+        exit 1
+    fi
+fi
+
+if [ "$DUMP" != "-" ] && [ ! -f "$DUMP" ]; then
+    echo "error: $DUMP does not exist" >&2
+    exit 1
+fi
+
+# MariaDB 11 has no `mysql` binary; probe rather than assume.
+CLIENT=$($COMPOSE exec -T db sh -c 'command -v mariadb || command -v mysql' | tr -d '\r')
+
+if [ -z "$CLIENT" ]; then
+    echo "error: no MariaDB/MySQL client inside the db container" >&2
+    exit 1
+fi
+
+echo "restoring ${DUMP} (this overwrites the databases in the dump)"
+
+if [ "$DUMP" = "-" ]; then
+    gunzip -c | $COMPOSE exec -T db sh -c "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" '${CLIENT}' -uroot"
+else
+    gunzip -c "$DUMP" | $COMPOSE exec -T db sh -c "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" '${CLIENT}' -uroot"
+fi
+
+echo "restore complete"

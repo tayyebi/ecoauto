@@ -67,6 +67,13 @@ Tags in use:
     and, with `IN_CONTAINER=1`, runs as the container entrypoint. `bin/deploy`
     delegates to it rather than reimplementing the preflight. Two scripts that
     both know how to install are two scripts that eventually disagree.
-15. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
+15. **`database.migrations` is one table name, not a map.** Laravel reads it as
+    `$migrations['table'] ?? $migrations`; a nested per-connection shape yields a
+    null table and the repository emits `create table `` `. Per-connection paths
+    live under `database.migration_paths` and are passed with `--path`.
+16. **Scripts probe for the MySQL client.** MariaDB 11 has no `mysql` binary;
+    the client is `mariadb`. Anything that shells out probes
+    `command -v mariadb || command -v mysql` instead of assuming.
+17. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
     `STORE_ADMIN_PASSWORD` name the seeded administrator, so an installation is
     not permanently attached to one hardcoded address.
