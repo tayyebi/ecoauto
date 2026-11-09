@@ -126,3 +126,17 @@ Tags in use:
     autoloader, because that autoloader eagerly includes `autoload.files`
     before Laravel's own error bootstrap can exist. `bin/bootstrap` warns when
     the ini is not in effect, so a stale image is visible instead of silent.
+25. **composer.lock's dist URLs follow the resolver's repo map, not the
+    package name.** A Composer name is not a git host path: `league/*` is
+    hosted at `thephpleague/*`, `psr/*` at `php-fig/*`, `guzzlehttp/*` at
+    `guzzle/*`, `nesbot/carbon` at `briannesbitt/Carbon`, and the `v` prefix
+    is not consistent across releases (guzzle tags `7.16.1`). The lock was
+    hand-generated with `github.com/{name}.git` and `zipball/v{version}`, so
+    25+ archives 404'd and `composer install` died on every clean `git pull`
+    deploy, leaving the vendor volume half-written. `make-lock.py` now imports
+    the `REPOS` map from `resolve-deps.py` (one copy, never two), probes
+    codeload for the tag with and without the `v` prefix, and exits non-zero
+    rather than write a lock that cannot install. Every dist URL in the lock
+    is verified reachable before it is committed — a redirect to codeload
+    (303/302) counts, HTTP 200 for the archive itself counts, 404 never
+    ships.
