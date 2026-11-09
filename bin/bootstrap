@@ -1,0 +1,272 @@
+#!/bin/sh
+# First install, and the container entrypoint.
+#
+# DECISION (infra): one script in two modes rather than two scripts that drift.
+# Run on the host it performs the entire first install; run as PID 1 inside the
+# container it prepares the runtime and hands over to the server. The mode is
+# explicit (IN_CONTAINER) rather than guessed from the environment, because
+# guessing wrong on the host would silently skip the install steps.
+#
+#   ./bin/bootstrap              first install, then start
+#   ./bin/bootstrap --check      preflight only, change nothing
+#   ./bin/bootstrap --port 9123  first install on a different port
+#
+# Inside the container the entrypoint calls it with the server command:
+#   bin/bootstrap php artisan store:serve
+
+set -eu
+
+APP_DIR="${APP_DIR:-/app}"
+
+log() { printf '[bootstrap] %s\n' "$*"; }
+fail() { printf '[bootstrap] ERROR: %s\n' "$*" >&2; exit 1; }
+
+# ===========================================================================
+# Container mode
+# ===========================================================================
+# Runs as the image's entrypoint. The checkout is mounted read-only, so this
+# only ever writes to ./data, the storage volume and the bootstrap-cache volume.
+# ===========================================================================
+container_mode() {
+    cd "$APP_DIR"
+
+    [ -f "$APP_DIR/.env" ] || fail ".env is missing. On the host run: ./bin/bootstrap"
+
+    if ! grep -q '^APP_KEY=base64:' "$APP_DIR/.env"; then
+        log "WARNING: APP_KEY is empty; sessions and CSRF tokens cannot be signed."
+    fi
+
+    # vendor/ is git-ignored and lives in a named volume, so a fresh clone has
+    # none. composer.lock is the marker: reinstall only when it moves.
+    if [ ! -f "$APP_DIR/vendor/autoload.php" ] || \
+       [ "$APP_DIR/composer.lock" -nt "$APP_DIR/vendor/composer/installed.json" ]; then
+        log "installing composer dependencies (first run takes a minute)"
+        composer install --no-interaction --no-progress --prefer-dist \
+            --optimize-autoloader --no-dev
+    else
+        log "composer dependencies are current"
+    fi
+
+    for dir in data data/cache data/sessions data/logs data/media data/mysql \
+               storage/framework/views storage/framework/cache \
+               storage/framework/sessions storage/logs bootstrap/cache; do
+        mkdir -p "$APP_DIR/$dir"
+    done
+
+    if [ "$(id -u)" = "0" ]; then
+        chown -R www-data:www-data "$APP_DIR/data" "$APP_DIR/storage" \
+            "$APP_DIR/bootstrap/cache" 2>/dev/null || true
+    fi
+
+    # Migrate what is outstanding, seed only an empty account tree, verify the
+    # writable paths. Exits non-zero if the database never appears, which is
+    # what makes `up -d` fail loudly instead of serving 500s.
+    log "booting"
+    php artisan store:boot --seed
+
+    if [ -n "${PHP_CLI_SERVER_WORKERS:-}" ]; then
+        log "serving with ${PHP_CLI_SERVER_WORKERS} workers on port ${STORE_PORT:-9020}"
+    fi
+
+    exec "$@"
+}
+
+# ===========================================================================
+# Host mode
+# ===========================================================================
+host_mode() {
+    cd "$(dirname "$0")/.."
+
+    PORT="${STORE_PORT:-9020}"
+    CHECK_ONLY=0
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --port) PORT="$2"; shift 2 ;;
+            --port=*) PORT="${1#*=}"; shift ;;
+            --check) CHECK_ONLY=1; shift ;;
+            -h|--help)
+                sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
+                exit 0 ;;
+            *) fail "unknown option: $1" ;;
+        esac
+    done
+
+    # ------------------------------------------------------------- preflight
+    command -v docker >/dev/null 2>&1 \
+        || fail "docker is not installed or not on PATH"
+
+    if docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE="docker-compose"
+    else
+        fail "neither 'docker compose' nor 'docker-compose' is available"
+    fi
+
+    log "docker: $(docker --version 2>/dev/null || echo 'version unknown')"
+    log "compose: $($COMPOSE version --short 2>/dev/null || echo 'present')"
+
+    # ------------------------------------------------------------- the port
+    # DECISION (infra): 9020 has to be free on THIS host before anything
+    # starts. Binding a port another service already owns fails late and with a
+    # Docker error that says nothing about which process is in the way.
+    port_in_use() {
+        if command -v ss >/dev/null 2>&1; then
+            ss -ltnH 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$1\$"
+        elif command -v netstat >/dev/null 2>&1; then
+            netstat -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$1\$"
+        else
+            return 1
+        fi
+    }
+
+    port_held_by_us() {
+        docker ps --filter "publish=$1" --format '{{.Names}}' 2>/dev/null \
+            | grep -q '^store'
+    }
+
+    if port_in_use "$PORT" && ! port_held_by_us "$PORT"; then
+        printf '\n' >&2
+        printf '[bootstrap] ERROR: port %s is already in use by another service on this host.\n' "$PORT" >&2
+        printf '       pick a free port and run again:\n' >&2
+        printf '         ./bin/bootstrap --port 9123\n\n' >&2
+        printf '       what is holding it:\n' >&2
+
+        # Match on the address column, not the whole line: `ss` prints the peer
+        # address after the local one, so anchoring the port at end-of-line
+        # against a full line never matches anything.
+        if command -v ss >/dev/null 2>&1; then
+            ss -ltnp 2>/dev/null | awk -v p=":$PORT" '$4 ~ p"$" {print "         " $0}' >&2
+        elif command -v netstat >/dev/null 2>&1; then
+            netstat -ltnp 2>/dev/null | awk -v p=":$PORT" '$4 ~ p"$" {print "         " $0}' >&2
+        fi
+
+        printf '\n' >&2
+        exit 1
+    fi
+
+    log "port ${PORT} is free"
+
+    if [ "$CHECK_ONLY" = 1 ]; then
+        log "preflight ok, nothing changed"
+        exit 0
+    fi
+
+    # ------------------------------------------------------------- .env
+    if [ ! -f .env ]; then
+        log "creating .env from .env.example"
+        cp .env.example .env
+    fi
+
+    # Keep the two sources of truth for the port in agreement.
+    if grep -q '^STORE_PORT=' .env; then
+        sed -i.bak "s|^STORE_PORT=.*|STORE_PORT=${PORT}|" .env && rm -f .env.bak
+    else
+        printf '\nSTORE_PORT=%s\n' "$PORT" >> .env
+    fi
+
+    if grep -q '^APP_URL=' .env; then
+        sed -i.bak "s|^APP_URL=.*|APP_URL=http://localhost:${PORT}|" .env && rm -f .env.bak
+    fi
+
+    # ------------------------------------------------------------- secrets
+    # DECISION (infra): generate the passwords instead of demanding them. A
+    # first install that stops to ask for two random strings is a first install
+    # that gets two weak strings typed into it.
+    random_secret() {
+        openssl rand -base64 24 2>/dev/null || head -c 24 /dev/urandom | base64
+    }
+
+    set_env() {
+        key="$1"
+        value="$2"
+        if grep -q "^${key}=" .env; then
+            escaped=$(printf '%s' "$value" | sed 's/[&|\\]/\\&/g')
+            sed -i.bak "s|^${key}=.*|${key}=${escaped}|" .env && rm -f .env.bak
+        else
+            printf '%s=%s\n' "$key" "$value" >> .env
+        fi
+    }
+
+    if ! grep -q '^APP_KEY=base64:' .env; then
+        set_env APP_KEY "base64:$(random_secret)"
+        log "generated APP_KEY"
+    fi
+
+    for secret in STORE_DB_PASSWORD STORE_DB_ROOT_PASSWORD; do
+        if ! grep -qE "^${secret}=.+" .env; then
+            set_env "$secret" "$(random_secret)"
+            log "generated ${secret}"
+        fi
+    done
+
+    mkdir -p data/cache data/sessions data/logs data/media data/mysql
+
+    # ------------------------------------------------------------- start
+    export STORE_PORT="$PORT"
+    log "starting the stack"
+    $COMPOSE up -d --build || fail "compose failed to start; see: $COMPOSE logs"
+
+    # ------------------------------------------------------------- wait
+    # The first boot installs Composer dependencies and runs the migrations, so
+    # it is slow. Poll until the login page answers rather than declaring
+    # success on a container that has not finished starting.
+    log "waiting for the application to answer (this can take a few minutes on a first install)"
+    waited=0
+    limit=600
+    while [ "$waited" -lt "$limit" ]; do
+        if docker ps --filter "name=store-app" --filter "status=running" --format '{{.Names}}' 2>/dev/null | grep -q store-app; then
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${PORT}/admin/login" 2>/dev/null || echo 000)
+            if [ "$code" = "200" ]; then
+                break
+            fi
+        fi
+        sleep 5
+        waited=$((waited + 5))
+        if [ $((waited % 30)) -eq 0 ]; then
+            log "still waiting (${waited}s)"
+        fi
+    done
+
+    printf '\n'
+    if [ "$waited" -ge "$limit" ]; then
+        printf '  %s\n' "----------------------------------------------------------------"
+        printf '  %s\n' "The stack is up but the app is not answering yet."
+        printf '  %s\n' "Check the logs:  $COMPOSE logs --tail=80 app"
+        printf '  %s\n' "----------------------------------------------------------------"
+        exit 1
+    fi
+
+    ADMIN_EMAIL=$(grep -E '^STORE_ADMIN_EMAIL=' .env 2>/dev/null | cut -d= -f2- || true)
+    ADMIN_EMAIL=${ADMIN_EMAIL:-tayyebimohammadreza@gmail.com}
+
+    printf '  %s\n' "=================================================================="
+    printf '  %s\n' "  store is installed and running"
+    printf '  %s\n' "=================================================================="
+    printf '\n'
+    printf '  %s\n' "  admin panel   http://localhost:${PORT}/admin/login"
+    printf '  %s\n' "  email         ${ADMIN_EMAIL}"
+    printf '  %s\n' "  password      password"
+    printf '\n'
+    printf '  %s\n' "  Change that password on first login."
+    printf '  %s\n' "  Storefront hosts come from account_domains; the seeded tenant is"
+    printf '  %s\n' "  www.ecoauto.ir, reachable locally with a Host header:"
+    printf '  %s\n' "    curl -H 'Host: www.ecoauto.ir' http://127.0.0.1:${PORT}/"
+    printf '\n'
+    printf '  %s\n' "  logs          ./bin/deploy --logs"
+    printf '  %s\n' "  backup        ./bin/db-backup"
+    printf '  %s\n' "=================================================================="
+    printf '\n'
+}
+
+# ===========================================================================
+
+# DECISION (infra): the mode is declared, never sniffed. A heuristic that looks
+# for docker or php would misjudge a host that happens to have PHP installed and
+# silently skip the install steps. The compose file sets IN_CONTAINER=1.
+if [ "${IN_CONTAINER:-0}" = "1" ]; then
+    container_mode "$@"
+else
+    host_mode "$@"
+fi

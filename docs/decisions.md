@@ -58,3 +58,10 @@ Tags in use:
 12. **Boot is idempotent.** `store:boot` runs on every container start: wait for
     the database, migrate what is outstanding, seed only when the account tree
     is empty. A restart must never be a repair job.
+13. **One install script.** `bin/bootstrap` does the first install on the host
+    and, with `IN_CONTAINER=1`, runs as the container entrypoint. `bin/deploy`
+    delegates to it rather than reimplementing the preflight. Two scripts that
+    both know how to install are two scripts that eventually disagree.
+14. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
+    `STORE_ADMIN_PASSWORD` name the seeded administrator, so an installation is
+    not permanently attached to one hardcoded address.

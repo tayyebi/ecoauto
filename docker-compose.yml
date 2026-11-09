@@ -44,6 +44,8 @@ services:
     env_file:
       - .env
     environment:
+      # Tells bin/bootstrap it is PID 1 rather than a first install on a host.
+      IN_CONTAINER: "1"
       # DECISION (infra): the port is 9020 on the container and 9020 on the
       # host. The two must stay equal; bin/deploy verifies the host port is
       # free before it starts anything.
@@ -77,7 +79,10 @@ services:
       # container or a privileged capability, and neither is worth it.
       - "${STORE_PORT:-9020}:${STORE_PORT:-9020}"
 
-    entrypoint: ["/bin/sh", "/app/bin/container-entrypoint"]
+    # DECISION (infra): the same script the host uses for a first install. It
+    # detects the container from this flag rather than from its surroundings.
+    entrypoint: ["/bin/sh", "/app/bin/bootstrap"]
+    # (the server command below is what bootstrap hands over to)
     command: ["php", "artisan", "store:serve"]
 
     depends_on:

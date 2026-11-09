@@ -105,6 +105,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | First operator
+    |--------------------------------------------------------------------------
+    |
+    | Who owns the installation when it is seeded. A deploy that cannot choose
+    | its own administrator identity ends up needing a database reset on every
+    | environment, so this is configuration rather than a literal in a seeder.
+    |
+    */
+
+    'operator' => [
+        'email' => env('STORE_ADMIN_EMAIL', 'tayyebimohammadreza@gmail.com'),
+
+        // DECISION (security): a known default password is a deliberate
+        // first-boot convenience, not a shipping credential. bin/bootstrap
+        // prints a warning and the admin must change it on first login.
+        'password' => env('STORE_ADMIN_PASSWORD', 'password'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Storefront behaviour
     |--------------------------------------------------------------------------
     */
