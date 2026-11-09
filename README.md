@@ -91,8 +91,30 @@ the writable directories, then runs `php artisan store:boot --seed`:
 - runs any outstanding landlord migrations
 - seeds the first tenant **only if the account tree is empty**
 - warns about any path the container cannot write
+- warns when `display_errors` is on, which means the image is stale
 
 Every step is idempotent. Restarting the stack is a no-op, not a repair.
+
+### PHP diagnostics
+
+`php:8.4-cli` has no `php.ini`, so the image adds one
+(`docker/zz-store.ini` → `/usr/local/etc/php/conf.d/zz-store.ini`):
+`display_errors=Off`, `log_errors=On` (to stderr), no output buffering. Without
+it PHP runs its development defaults and writes warnings into the response
+body, which commits the headers and turns any notice into
+`Cannot modify header information - headers already sent`
+(`Response.php:328`), burying the real exception. `public/index.php` also sets
+`display_errors=0` before requiring the autoloader, because Composer's
+`autoload.files` run before Laravel's error handling exists.
+
+Diagnostics therefore appear in `docker compose logs app` (and in
+`data/logs/laravel.log` through the `single` channel), never in the browser.
+
+**Finding the real error.** The logged exception is a tree, not a line: read
+the message, then `[previous exception]`, then the `caused_by` frames in the
+JSON blob. The line that mentions `headers already sent` or
+`Response.php:328` is always the *second* fault and never the cause — the cause
+is whichever notice wrote a byte before the response was sent.
 
 ## Data
 

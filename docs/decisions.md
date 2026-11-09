@@ -108,3 +108,21 @@ Tags in use:
     called `setPlatformHost()` where the class exposes `markPlatformHost()`.
     The middleware runs on every web request, so a wrong name is not a bug in
     one feature: every route answered 500, including the front page.
+24. **Diagnostics never go into the response body.** `php:8.4-cli` ships no
+    `php.ini`, so the container ran PHP's compiled development defaults:
+    `display_errors=STDOUT`, `log_errors=Off`, `output_buffering=0`. A response
+    is a byte stream whose header block is committed by the first body byte, so
+    one notice from any dependency turned every page into
+
+        Cannot modify header information - headers already sent
+
+    raised at `vendor/symfony/http-foundation/Response.php:328` — because the
+    built-in server's SAPI (`cli-server`) is not in Symfony's CLI allowlist, so
+    `sendHeaders()` still calls `header()` on an already-committed response.
+    The warning then replaced the real `RuntimeException` in the log, which is
+    why the first fault was invisible. Two layers fix it: the image copies
+    `docker/zz-store.ini` into `conf.d` (so the console and the web path agree), and
+    `public/index.php` sets `display_errors=0` before requiring the
+    autoloader, because that autoloader eagerly includes `autoload.files`
+    before Laravel's own error bootstrap can exist. `bin/bootstrap` warns when
+    the ini is not in effect, so a stale image is visible instead of silent.

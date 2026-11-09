@@ -32,6 +32,20 @@ RUN docker-php-ext-install -j"$(nproc)" \
 # Matching the Composer major the lock file was generated with.
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
+# DECISION (infra): the image ships a php.ini, because php:8.4-cli ships none.
+# Without it PHP runs its compiled development defaults - display_errors on
+# STDOUT, log_errors off, no output buffering - so any notice from any
+# dependency is written into the response body, commits the header block, and
+# turns a harmless warning into
+#   "Cannot modify header information - headers already sent"
+# at Response.php:328, with the real exception buried beneath it.
+#
+# conf.d is the right home for it: the same file then applies to
+# `php artisan` (including the entrypoint's store:boot) and to the built-in
+# server, so the console and the web path cannot disagree. The name sorts after
+# the official zz-docker.ini and every package ini, so these values win.
+COPY docker/zz-store.ini /usr/local/etc/php/conf.d/zz-store.ini
+
 WORKDIR /app
 
 # Documentation only; the real mapping lives in docker-compose.yml.
