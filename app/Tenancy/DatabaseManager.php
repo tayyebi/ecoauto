@@ -7,6 +7,7 @@ namespace App\Tenancy;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 /**
  * DECISION (tenancy): the tenant connection is a single named connection that
@@ -64,21 +65,52 @@ final class DatabaseManager
         return $this->connections[$key] = $connection;
     }
 
-    /** Build a Laravel connection array for an account without registering it. */
+    /**
+     * Build a Laravel connection array for an account without registering it.
+     *
+     * DECISION (tenancy): the base is the *landlord* connection, not the
+     * `mysql` one. `config/database.php` defines only `landlord` and `tenant`,
+     * but `database.connections.mysql` still resolves - to Laravel's *stock*
+     * framework config, which reads DB_HOST / DB_USERNAME / DB_PASSWORD. This
+     * project sets STORE_DB_* instead, so `mysql` silently resolved to
+     * 127.0.0.1 / root and every tenant connection pointed at a database that
+     * does not exist inside the app container. A plausible-looking config with
+     * the wrong host is worse than a missing one, because nothing throws.
+     *
+     * Landlord is by definition the same server as every tenant, so it is the
+     * only correct source for host, port and credentials.
+     */
     public function configurationFor(Account $account): array
     {
-        $base = config('database.connections.mysql', []);
+        $base = (array) config('database.connections.'.config('store.landlord_connection', 'landlord'), []);
+
+        if ($base === []) {
+            throw new RuntimeException(
+                'The landlord connection is not configured; cannot derive tenant connection settings.'
+            );
+        }
 
         $overrides = (array) $account->setting('database', []);
 
-        return array_merge($base, array_filter([
+        $config = array_merge($base, [
             'database' => $account->database,
-            'host' => $overrides['host'] ?? $base['host'] ?? '127.0.0.1',
-            'port' => $overrides['port'] ?? $base['port'] ?? 3306,
-            'username' => $overrides['username'] ?? $base['username'] ?? null,
-            'password' => $overrides['password'] ?? $base['password'] ?? null,
-            'unix_socket' => $overrides['unix_socket'] ?? $base['unix_socket'] ?? null,
-        ], static fn ($value) => $value !== null));
+        ]);
+
+        // Only override what the account actually specifies. Using array_filter
+        // here would drop legitimately empty values such as a blank password.
+        foreach (['host', 'port', 'username', 'password', 'unix_socket'] as $key) {
+            if (array_key_exists($key, $overrides) && $overrides[$key] !== null) {
+                $config[$key] = $overrides[$key];
+            }
+        }
+
+        if (empty($config['host']) && empty($config['unix_socket'])) {
+            throw new RuntimeException(
+                'The tenant connection would have no host and no socket; check STORE_DB_HOST.'
+            );
+        }
+
+        return $config;
     }
 
     /** Make the account's database the default connection for this request. */
