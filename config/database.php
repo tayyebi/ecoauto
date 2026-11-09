@@ -75,15 +75,36 @@ return [
 
     ],
 
-    'migrations' => [
-        'landlord' => [
-            'path' => database_path('migrations/landlord'),
-            'table' => 'migrations',
-        ],
-        'tenant' => [
-            'path' => database_path('migrations/tenant'),
-            'table' => 'migrations',
-        ],
+    /*
+     |--------------------------------------------------------------------------
+     | Migrations
+     |--------------------------------------------------------------------------
+     |
+     | DECISION (db): `migrations` is a single repository definition, not a map
+     | of connection names. Laravel's MigrationServiceProvider reads it as
+     |
+     |     $table = is_array($migrations) ? ($migrations['table'] ?? null) : $migrations;
+     |
+     | so a nested ['landlord' => ['table' => ...]] shape yields a null table and
+     | the repository then runs `create table `` ...` - "Incorrect table name ''"
+     | on the very first migrate.
+     |
+     | A single table name is correct here: landlord and tenant are separate
+     | databases, so each gets its own `migrations` table with no collision.
+     |
+     */
+
+    'migrations' => 'migrations',
+
+    /*
+     | DECISION (db): the per-connection migration paths live under their own
+     | key, because `migrations` above belongs to the framework. Commands pass
+     | these explicitly with --path instead.
+     */
+
+    'migration_paths' => [
+        'landlord' => database_path('migrations/landlord'),
+        'tenant' => database_path('migrations/tenant'),
     ],
 
     'redis' => [

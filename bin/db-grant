@@ -1,0 +1,57 @@
+#!/bin/sh
+# Grant the application user the right to create its own tenant databases.
+#
+# DECISION (infra): the app creates one database per storefront account at
+# runtime, so its MySQL user needs CREATE on the `store_` prefix. The ideal is
+# bin/mysql-init.sh, which MariaDB runs when it initialises an empty data
+# directory - but that happens exactly once, so any installation whose database
+# already exists (every restart, every restored backup) never gets the grant.
+# This script applies it idempotently at any time.
+#
+# Usage: ./bin/db-grant
+
+set -eu
+
+cd "$(dirname "$0")/.."
+
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE="docker compose"
+else
+    COMPOSE="docker-compose"
+fi
+
+env_value() {
+    grep -E "^$1=" .env 2>/dev/null | tail -n1 | cut -d= -f2- || true
+}
+
+DB_USER="$(env_value STORE_DB_USERNAME)"; DB_USER="${DB_USER:-store}"
+DB_ROOT="$(env_value STORE_DB_ROOT_PASSWORD)"
+
+if [ -z "$DB_ROOT" ]; then
+    echo "error: STORE_DB_ROOT_PASSWORD is empty in .env" >&2
+    exit 1
+fi
+
+# DECISION (infra): MariaDB 11 has no `mysql` binary; the client is `mariadb`.
+# Probe inside the container so this works against either a MariaDB or a MySQL
+# image without the caller having to care which.
+CLIENT=$($COMPOSE exec -T db sh -c 'command -v mariadb || command -v mysql' | tr -d '\r')
+
+if [ -z "$CLIENT" ]; then
+    echo "error: no MariaDB/MySQL client found inside the db container" >&2
+    exit 1
+fi
+
+echo "granting CREATE on store_% to '${DB_USER}'@'%'"
+
+# The SQL is piped rather than passed with -e so the quoting never reaches the
+# host shell: backticks inside double quotes get command-substituted, which is
+# how this goes wrong when typed by hand.
+$COMPOSE exec -T db sh -c "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" '${CLIENT}' -uroot" <<SQL
+GRANT ALL PRIVILEGES ON \`store\\_%\`.* TO '${DB_USER}'@'%';
+FLUSH PRIVILEGES;
+SQL
+
+echo
+echo "current grants for '${DB_USER}'@'%':"
+$COMPOSE exec -T db sh -c "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" '${CLIENT}' -uroot -N -B -e \"SHOW GRANTS FOR '${DB_USER}'@'%'\"" | tr -d '\r' | sed 's/^/  /'

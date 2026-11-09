@@ -110,8 +110,25 @@ dumps every database the installation owns — the landlord one plus one per
 tenant, which are created lazily and so cannot be listed in advance.
 
 ```sh
-./bin/db-backup
-gunzip -c data/backups/store-<stamp>.sql.gz | docker compose exec -T db mysql -u root -p
+./bin/db-backup          # writes data/backups/store-<stamp>.sql.gz
+./bin/db-restore         # restores the newest dump
+./bin/db-restore <file>  # or a specific one
+```
+
+Restore is a script rather than a documented `gunzip | docker compose exec …mysql -u root -p`
+pipeline: that prompts for a password the container already holds, which is how
+people end up pasting secrets into a shell.
+
+### Grants
+
+The application creates one database per storefront account at runtime, so its
+MySQL user needs `CREATE` on the `store_` prefix. That is granted by
+`bin/mysql-init.sh`, which MariaDB runs once when it initialises an *empty* data
+directory — so an installation whose database already exists never gets it.
+Apply it at any time with:
+
+```sh
+./bin/db-grant
 ```
 
 ## Operating

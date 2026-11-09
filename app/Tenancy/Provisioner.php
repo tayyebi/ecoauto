@@ -8,6 +8,8 @@ use App\Tenancy\Exceptions\AccountNotFound;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
+use ReflectionProperty;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -62,6 +64,23 @@ final class Provisioner
         $repository->setSource($connection->getName());
         $repository->setConnection($connection->getName());
 
+        // DECISION (db): assert the repository actually has a table name before
+        // touching the database. An empty name makes the repository emit
+        // `create table `` ` and MySQL answers "Incorrect table name ''", which
+        // points at SQL rather than at the config that produced it.
+        //
+        // `$table` is a protected property with no accessor, so reflection is
+        // the only way to read it - and reading it is the entire point of the
+        // check.
+        $table = (new ReflectionProperty($repository, 'table'))->getValue($repository);
+
+        if (! is_string($table) || trim($table) === '') {
+            throw new RuntimeException(
+                'The migrations table name is empty. Check config/database.php: '
+                ."'migrations' must be a table name (or ['table' => ...]), not a map of connections."
+            );
+        }
+
         if (! $repository->repositoryExists()) {
             $repository->createRepository();
         }
@@ -112,7 +131,9 @@ final class Provisioner
     /** @return list<string> */
     public function migrationPaths(): array
     {
-        return [database_path('migrations/tenant')];
+        // Single source of truth: config/database.php owns the paths, so a
+        // renamed directory is one edit rather than a hunt through commands.
+        return [(string) config('database.migration_paths.tenant', database_path('migrations/tenant'))];
     }
 
     /**
