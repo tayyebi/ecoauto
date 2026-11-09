@@ -84,3 +84,11 @@ Tags in use:
 19. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
     `STORE_ADMIN_PASSWORD` name the seeded administrator, so an installation is
     not permanently attached to one hardcoded address.
+20. **Tenant connection settings derive from the landlord connection.** The
+    framework still exposes `database.connections.mysql` even when a project
+    never defines it: it is Laravel's stock config, reading `DB_HOST` and
+    `DB_USERNAME`. This project uses `STORE_DB_*`, so deriving from `mysql`
+    silently produced `127.0.0.1` / `root` and every provision failed with
+    "Connection refused" while MariaDB was healthy. Landlord is the same server
+    as every tenant, so it is the only correct base — and an unresolvable
+    landlord config now throws instead of falling back to a default that lies.
