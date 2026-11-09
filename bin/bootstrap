@@ -36,6 +36,19 @@ container_mode() {
         log "WARNING: APP_KEY is empty; sessions and CSRF tokens cannot be signed."
     fi
 
+    # DECISION (infra): say this out loud rather than let it be discovered as a
+    # 500. public/index.php suppresses display_errors before the autoloader
+    # runs, so responses survive this either way - but on a host where the
+    # image's php.ini is missing, diagnostics printed before Laravel boots go
+    # into the response body, and the header block is already committed by then.
+    # An empty value, "0", "off" and "stderr" are all acceptable; anything else
+    # (notably the compiled default, "STDOUT") is not. `php -r` is the same
+    # binary the server runs, so this reads the ini actually loaded by conf.d.
+    if ! php -r 'exit(in_array(strtolower(trim((string) ini_get("display_errors"))), ["", "0", "off", "stderr"], true) ? 0 : 1);'; then
+        log "WARNING: display_errors is on; PHP diagnostics will be written into responses."
+        log "         expected docker/zz-store.ini in the image - rebuild with: docker compose up -d --build"
+    fi
+
     # vendor/ is git-ignored and lives in a named volume, so a fresh clone has
     # none. composer.lock is the marker: reinstall only when it moves.
     if [ ! -f "$APP_DIR/vendor/autoload.php" ] || \
