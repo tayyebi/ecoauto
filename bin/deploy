@@ -1,93 +1,40 @@
 #!/bin/sh
-# Host-side deploy for a `git pull` + `docker-compose up -d` workflow.
+# Deploy wrapper: kept as the familiar name, implemented by bin/bootstrap.
 #
-# DECISION (infra): this script exists because the app binds exactly one port,
-# 9020, on a server that is already running other things. "Port 9020" is only a
-# safe default if something checks that 9020 is actually free on THIS host
-# before the stack starts, and says so plainly when it is not.
+# DECISION (infra): there is exactly one install implementation. `deploy` and
+# `bootstrap` were on their way to duplicating the port preflight, the .env
+# handling and the secret generation, which is how two scripts end up
+# disagreeing about the port. This one delegates.
 #
-#   ./bin/deploy                  check the port, then up -d
-#   ./bin/deploy --port 9123      same, on a different port
-#   ./bin/deploy --check          only report whether the port is usable
-#   ./bin/deploy --logs           tail the app logs
-#   ./bin/deploy --down           stop the stack, leave ./data alone
-#
-# Everything persistent stays in ./data. `down` never deletes it.
+#   ./bin/deploy                 same as ./bin/bootstrap
+#   ./bin/deploy --check         preflight only
+#   ./bin/deploy --port 9123     a different port
+#   ./bin/deploy --logs          tail the application
+#   ./bin/deploy --down          stop the stack, keep ./data
+#   ./bin/deploy --restart       recreate the app container
 
 set -eu
 
 cd "$(dirname "$0")/.."
 
-PORT="${STORE_PORT:-9020}"
 ACTION=up
-CHECK_ONLY=0
+PASSTHROUGH=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --port) PORT="$2"; shift 2 ;;
-        --port=*) PORT="${1#*=}"; shift ;;
-        --check) CHECK_ONLY=1; shift ;;
         --logs) ACTION=logs; shift ;;
         --down) ACTION=down; shift ;;
         --restart) ACTION=restart; shift ;;
         -h|--help)
-            sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
             exit 0 ;;
-        *) echo "unknown option: $1" >&2; exit 2 ;;
+        *)
+            # --port/--check belong to bootstrap; forward them unchanged.
+            PASSTHROUGH="$PASSTHROUGH $1"
+            shift ;;
     esac
 done
 
-# --------------------------------------------------------------- port check
-# Is anything already listening on this port, on any interface? The app must be
-# the only thing that owns it, otherwise the published port collides with a
-# service that was here first and `up -d` fails with a bind error.
-port_in_use() {
-    port="$1"
-
-    if command -v ss >/dev/null 2>&1; then
-        ss -ltnH 2>/dev/null | awk '{print $4}' | grep -qE "[:.]${port}\$" && return 0
-    elif command -v netstat >/dev/null 2>&1; then
-        netstat -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]${port}\$" && return 0
-    fi
-
-    return 1
-}
-
-# Is OUR stack the thing holding the port? Restarting our own container is fine;
-# colliding with somebody else's service is not.
-port_held_by_us() {
-    port="$1"
-    if command -v docker >/dev/null 2>&1; then
-        docker ps --filter "publish=${port}" --format '{{.Names}}' 2>/dev/null | grep -q '^store' && return 0
-    fi
-    return 1
-}
-
-check_port() {
-    port="$1"
-
-    if port_in_use "$port" && ! port_held_by_us "$port"; then
-        echo "error: port ${port} is already in use on this host by another service" >&2
-        echo >&2
-        echo "  pick a free port instead, for example:" >&2
-        echo "    ./bin/deploy --port 9123   (or export STORE_PORT=9123)" >&2
-        echo >&2
-        echo "  what is holding it:" >&2
-        command -v ss >/dev/null 2>&1 && ss -ltnp 2>/dev/null | grep -E "[:.]${port}\$" | sed 's/^/    /' >&2 || true
-        return 1
-    fi
-
-    echo "port ${port} is free for the store"
-    return 0
-}
-
-if [ "$ACTION" = check ] || [ "$CHECK_ONLY" = 1 ]; then
-    check_port "$PORT"
-    exit $?
-fi
-
-# ------------------------------------------------------------ compose command
-# Support both the v2 plugin and the legacy binary, in that order.
 if docker compose version >/dev/null 2>&1; then
     COMPOSE="docker compose"
 elif command -v docker-compose >/dev/null 2>&1; then
@@ -97,76 +44,15 @@ else
     exit 1
 fi
 
-
 case "$ACTION" in
-    logs)
-        exec $COMPOSE logs -f --tail=200 app
-        ;;
-
-    down)
-        echo "stopping the stack; ./data is untouched"
-        exec $COMPOSE down
-        ;;
-
+    logs)    exec $COMPOSE logs -f --tail=200 app ;;
+    down)    echo "stopping the stack; ./data is untouched"; exec $COMPOSE down ;;
     restart)
-        check_port "$PORT"
-        export STORE_PORT="$PORT"
+        # Recreate only the app container: the database and ./data stay put.
         exec $COMPOSE up -d --no-deps app
         ;;
-
     up)
-        # ------------------------------------------------------------ .env
-        if [ ! -f .env ]; then
-            echo "no .env found, copying .env.example"
-            cp .env.example .env
-        fi
-
-        # Keep the compose port and the app port in agreement. Two sources of
-        # truth for one number is the classic way to end up with a container
-        # listening on a port the host is not publishing.
-        if grep -q '^STORE_PORT=' .env; then
-            sed -i.bak "s/^STORE_PORT=.*/STORE_PORT=${PORT}/" .env && rm -f .env.bak
-        else
-            printf '\nSTORE_PORT=%s\n' "$PORT" >> .env
-        fi
-
-        # APP_URL drives generated links and the payment callback.
-        if grep -q '^APP_URL=' .env; then
-            sed -i.bak "s#^APP_URL=.*#APP_URL=http://localhost:${PORT}#" .env && rm -f .env.bak
-        fi
-
-        check_port "$PORT" || exit 1
-
-        # ---------------------------------------------------------- APP_KEY
-        # Without a key, sessions and CSRF tokens cannot be signed. Generate it
-        # on the host with openssl rather than `artisan key:generate`: the
-        # container has not started yet, and the host may not have PHP at all.
-        if ! grep -q '^APP_KEY=base64:' .env; then
-            key="$(openssl rand -base64 32 2>/dev/null || head -c 32 /dev/urandom | base64)"
-            if [ -n "$key" ]; then
-                sed -i.bak "s|^APP_KEY=.*|APP_KEY=base64:${key}|" .env && rm -f .env.bak
-                echo "generated APP_KEY"
-            else
-                echo "warning: could not generate APP_KEY; set it by hand" >&2
-            fi
-        fi
-
-        # ------------------------------------------------- required secrets
-        # compose refuses to start without these, so say it here with a hint
-        # rather than letting it fail with a raw interpolation error.
-        for required in STORE_DB_PASSWORD STORE_DB_ROOT_PASSWORD; do
-            if ! grep -qE "^${required}=.+" .env; then
-                echo "error: ${required} is empty in .env" >&2
-                echo "       pick a value, for example: openssl rand -base64 24" >&2
-                exit 1
-            fi
-        done
-
-        # ------------------------------------------------------- data dirs
-        mkdir -p data/cache data/sessions data/logs data/media data/mysql
-
-        export STORE_PORT="$PORT"
-        echo "starting the stack on port ${PORT}"
-        exec $COMPOSE up -d --build
+        # shellcheck disable=SC2086
+        exec ./bin/bootstrap $PASSTHROUGH
         ;;
 esac

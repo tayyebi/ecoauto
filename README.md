@@ -12,23 +12,45 @@ site, but nothing in the code is specific to it.
 The workflow is `git pull` and `docker-compose up -d` on the target server.
 There is no CI and no image registry — the checkout *is* the deployment.
 
+### First install
+
 ```sh
 git pull
-./bin/deploy
+./bin/bootstrap
 ```
 
-`./bin/deploy` is a thin wrapper around `docker-compose up -d` that does the
-things a hand-run deploy usually forgets:
+`./bin/bootstrap` is the whole first install, in order:
 
-1. creates `.env` from `.env.example` if it is missing
-2. generates `APP_KEY` with openssl, so sessions and CSRF work
-3. refuses to start when the two database passwords are still empty
-4. **checks that port 9020 is free on this host** and stops with a clear message
-   if another service already owns it (`./bin/deploy --check` tests this alone)
-5. syncs `STORE_PORT` and `APP_URL` in `.env`, then runs `docker-compose up -d`
+1. checks Docker and Compose are installed
+2. **checks port 9020 is free** and names whatever process holds it if not
+3. creates `.env` from `.env.example`
+4. generates `APP_KEY`, `STORE_DB_PASSWORD` and `STORE_DB_ROOT_PASSWORD`
+5. creates the `./data` tree
+6. builds and starts the stack
+7. waits for `/admin/login` to answer (a first install compiles dependencies, so
+   this is minutes, not seconds)
+8. prints the admin URL and the seeded credentials
 
-Plain `docker-compose up -d` also works once `.env` exists; it just skips the
-preflight checks.
+`./bin/bootstrap --check` runs steps 1–2 only and changes nothing.
+`./bin/bootstrap --port 9123` installs on a different port.
+
+### Later deploys
+
+```sh
+git pull && ./bin/deploy
+```
+
+`./bin/deploy` delegates to `bin/bootstrap` for the install path and adds the
+day-to-day verbs:
+
+```sh
+./bin/deploy --logs      # tail the application
+./bin/deploy --down      # stop the stack, keep ./data
+./bin/deploy --restart   # recreate the app container only
+```
+
+There is exactly one install implementation; `deploy` does not reimplement the
+preflight.
 
 ### Ports
 
@@ -57,11 +79,12 @@ Compose maps `${STORE_PORT}:${STORE_PORT}`, so one variable moves both ends.
 
 ### What happens on every start
 
-`bin/container-entrypoint` runs before the server. The checkout is mounted
-read-only, so the entrypoint only ever writes to `./data`, the `storage` volume
-and the `bootstrap-cache` volume. It runs `composer install` when `composer.lock`
-is newer than the installed vendor tree, creates the writable directories, then
-runs `php artisan store:boot --seed`:
+The same `bin/bootstrap` script runs as the container entrypoint, told apart by
+`IN_CONTAINER=1`. The checkout is mounted read-only, so in container mode it only
+ever writes to `./data`, the `storage` volume and the `bootstrap-cache` volume.
+It runs `composer install` when `composer.lock` is newer than the installed
+vendor tree, creates the writable directories, then runs
+`php artisan store:boot --seed`:
 
 - waits for MariaDB to accept connections (retries, so a slow db container does
   not break the deploy)
@@ -99,8 +122,10 @@ gunzip -c data/backups/store-<stamp>.sql.gz | docker compose exec -T db mysql -u
 ./bin/deploy --restart   # recreate the app container only
 ```
 
-The control plane is at `/admin`. The seeded operator is `admin@ecoauto.ir` /
-`password` — change it immediately on a public host.
+The control plane is at `/admin`. The seeded operator is
+`tayyebimohammadreza@gmail.com` / `password` — change it immediately on a public
+host. Both are configurable through `STORE_ADMIN_EMAIL` and
+`STORE_ADMIN_PASSWORD`.
 
 ## Local development without Docker
 

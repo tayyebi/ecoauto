@@ -98,11 +98,17 @@ final class EcoautoTenantSeeder extends Seeder
         $this->seedContent($connectionName);
 
         // ----------------------------------------------------------- operator
+        // DECISION (infra): the operator address is configuration, not a
+        // literal. A deploy that cannot choose its own administrator identity
+        // ends up with a reset-the-database step on every environment.
+        $operatorEmail = (string) config('store.operator.email', 'tayyebimohammadreza@gmail.com');
+        $operatorPassword = (string) config('store.operator.password', 'password');
+
         $owner = User::query()->firstOrCreate(
-            ['email' => 'admin@ecoauto.ir'],
+            ['email' => $operatorEmail],
             [
-                'name' => 'مدیر اکواتو',
-                'password' => 'password',
+                'name' => 'مدیر سیستم',
+                'password' => $operatorPassword,
                 'is_platform_admin' => true,
                 'default_account_id' => $ecoauto->id,
             ],
@@ -125,7 +131,7 @@ final class EcoautoTenantSeeder extends Seeder
         // DECISION (infra): the control plane summary uses the loopback host
         // rather than the bind address, because 0.0.0.0 is not clickable.
         $this->command?->line("  control plane:      http://localhost:{$port}/admin");
-        $this->command?->line('  operator:           admin@ecoauto.ir / password');
+        $this->command?->line("  operator:           {$operatorEmail}");
     }
 
     /** Run the content seeder against an explicit connection. */
