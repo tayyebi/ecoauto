@@ -60,9 +60,13 @@ final class Provisioner
         $migrator = app('migrator');
         assert($migrator instanceof Migrator);
 
+        // DECISION (db): point the migrator at the tenant connection through
+        // `setConnection`, which forwards to the repository's `setSource` and
+        // swaps the default connection. The repository itself has no
+        // `setConnection` method - calling it was a guess at an API that does
+        // not exist, and it threw before the migration ever started.
         $repository = $migrator->getRepository();
-        $repository->setSource($connection->getName());
-        $repository->setConnection($connection->getName());
+        $migrator->setConnection($connection->getName());
 
         // DECISION (db): assert the repository actually has a table name before
         // touching the database. An empty name makes the repository emit
