@@ -8,14 +8,13 @@
     "packages": [
         {
             "name": "brick/math",
-            "version": "1.0.0",
+            "version": "0.17.2",
             "require": {
                 "php": "^8.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "^11.5",
-                "phpstan/phpstan": "2.2.13",
-                "phpstan/phpstan-phpunit": "2.0.18"
+                "phpstan/phpstan": "2.1.22"
             },
             "type": "library",
             "autoload": {
@@ -45,16 +44,16 @@
                 "Rational",
                 "Integer"
             ],
-            "version_normalized": "1.0.0.0",
+            "version_normalized": "0.17.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "v1.0.0"
+                "reference": "v0.17.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/v1.0.0",
-                "reference": "v1.0.0"
+                "url": "https://api.github.com/repos/brick/math/zipball/v0.17.2",
+                "reference": "v0.17.2"
             }
         },
         {
@@ -536,24 +535,23 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "8.3.1",
+            "version": "7.16.1",
             "require": {
-                "php": "^7.4 || ^8.0",
+                "php": "^7.2.5 || ^8.0",
                 "ext-json": "*",
-                "guzzlehttp/promises": "^3.1",
-                "guzzlehttp/psr7": "^3.2",
+                "guzzlehttp/promises": "^2.6",
+                "guzzlehttp/psr7": "^2.13.2",
                 "psr/http-client": "^1.0",
-                "psr/http-factory": "^1.0",
-                "symfony/polyfill-php80": "^1.25",
-                "symfony/polyfill-php82": "^1.27"
+                "symfony/deprecation-contracts": "^2.5 || ^3.0",
+                "symfony/polyfill-php80": "^1.25"
             },
             "require-dev": {
                 "ext-curl": "*",
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "guzzle/client-integration-tests": "4.0.1",
-                "guzzlehttp/test-server": "^1.1",
+                "guzzle/client-integration-tests": "3.0.3",
+                "guzzlehttp/test-server": "^0.7",
                 "php-http/message-factory": "^1.1",
-                "phpunit/phpunit": "^9.6.34",
+                "phpunit/phpunit": "^8.5.52 || ^9.6.34",
                 "psr/log": "^1.1 || ^2.0 || ^3.0"
             },
             "provide": {
@@ -573,7 +571,10 @@
             "autoload": {
                 "psr-4": {
                     "GuzzleHttp\\": "src/"
-                }
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
             },
             "autoload-dev": {
                 "psr-4": {
@@ -630,29 +631,29 @@
                 "PSR-7",
                 "PSR-18"
             ],
-            "version_normalized": "8.3.1.0",
+            "version_normalized": "7.16.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzlehttp/guzzle.git",
-                "reference": "v8.3.1"
+                "reference": "v7.16.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/guzzle/zipball/v8.3.1",
-                "reference": "v8.3.1"
+                "url": "https://api.github.com/repos/guzzlehttp/guzzle/zipball/v7.16.1",
+                "reference": "v7.16.1"
             },
             "type": "library"
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "3.1.0",
+            "version": "2.6.0",
             "require": {
-                "php": "^7.4 || ^8.0",
+                "php": "^7.2.5 || ^8.0",
                 "symfony/deprecation-contracts": "^2.5 || ^3.0"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "phpunit/phpunit": "^9.6.34"
+                "phpunit/phpunit": "^8.5.52 || ^9.6.34"
             },
             "extra": {
                 "bamarni-bin": {
@@ -697,39 +698,39 @@
             "keywords": [
                 "promise"
             ],
-            "version_normalized": "3.1.0.0",
+            "version_normalized": "2.6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzlehttp/promises.git",
-                "reference": "v3.1.0"
+                "reference": "v2.6.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/promises/zipball/v3.1.0",
-                "reference": "v3.1.0"
+                "url": "https://api.github.com/repos/guzzlehttp/promises/zipball/v2.6.0",
+                "reference": "v2.6.0"
             },
             "type": "library"
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "3.2.0",
+            "version": "2.13.2",
             "require": {
-                "php": "^7.4 || ^8.0",
-                "psr/http-factory": "^1.1",
-                "psr/http-message": "^2.0",
-                "symfony/polyfill-php80": "^1.25",
-                "symfony/polyfill-php82": "^1.27"
+                "php": "^7.2.5 || ^8.0",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 || ^2.0",
+                "ralouphie/getallheaders": "^3.0",
+                "symfony/deprecation-contracts": "^2.5 || ^3.0",
+                "symfony/polyfill-php80": "^1.25"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "http-interop/http-factory-tests": "1.1.0",
                 "jshttp/mime-db": "1.54.0.1",
-                "php-http/psr7-integration-tests": "^1.5.1",
-                "phpunit/phpunit": "^9.6.34"
+                "phpunit/phpunit": "^8.5.52 || ^9.6.34"
             },
             "provide": {
-                "psr/http-factory-implementation": "1.1",
-                "psr/http-message-implementation": "2.0"
+                "psr/http-factory-implementation": "1.0",
+                "psr/http-message-implementation": "1.0"
             },
             "suggest": {
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
@@ -799,30 +800,30 @@
                 "url",
                 "psr-7"
             ],
-            "version_normalized": "3.2.0.0",
+            "version_normalized": "2.13.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzlehttp/psr7.git",
-                "reference": "v3.2.0"
+                "reference": "v2.13.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/psr7/zipball/v3.2.0",
-                "reference": "v3.2.0"
+                "url": "https://api.github.com/repos/guzzlehttp/psr7/zipball/v2.13.2",
+                "reference": "v2.13.2"
             },
             "type": "library"
         },
         {
             "name": "guzzlehttp/uri-template",
-            "version": "2.0.1",
+            "version": "1.0.11",
             "require": {
-                "php": "^7.4 || ^8.0",
+                "php": "^7.2.5 || ^8.0",
                 "symfony/polyfill-php80": "^1.25"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "phpunit/phpunit": "^9.6.34",
-                "uri-template/tests": "1.0.2"
+                "phpunit/phpunit": "^8.5.52 || ^9.6.34",
+                "uri-template/tests": "1.0.0"
             },
             "extra": {
                 "bamarni-bin": {
@@ -868,16 +869,16 @@
                 "guzzlehttp",
                 "uri-template"
             ],
-            "version_normalized": "2.0.1.0",
+            "version_normalized": "1.0.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzlehttp/uri-template.git",
-                "reference": "v2.0.1"
+                "reference": "v1.0.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/uri-template/zipball/v2.0.1",
-                "reference": "v2.0.1"
+                "url": "https://api.github.com/repos/guzzlehttp/uri-template/zipball/v1.0.11",
+                "reference": "v1.0.11"
             },
             "type": "library"
         },
@@ -2550,6 +2551,47 @@
             "type": "library"
         },
         {
+            "name": "ralouphie/getallheaders",
+            "version": "3.0.3",
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5 || ^6.5",
+                "php-coveralls/php-coveralls": "^2.1"
+            },
+            "autoload": {
+                "files": [
+                    "src/getallheaders.php"
+                ]
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "getallheaders\\Tests\\": "tests/"
+                }
+            },
+            "license": "MIT",
+            "authors": [
+                {
+                    "name": "Ralph Khattar",
+                    "email": "ralph.khattar@gmail.com"
+                }
+            ],
+            "description": "A polyfill for getallheaders.",
+            "version_normalized": "3.0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ralouphie/getallheaders.git",
+                "reference": "v3.0.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/v3.0.3",
+                "reference": "v3.0.3"
+            },
+            "type": "library"
+        },
+        {
             "name": "ramsey/collection",
             "version": "2.1.1",
             "require": {
@@ -3745,61 +3787,6 @@
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/v1.43.0",
-                "reference": "v1.43.0"
-            }
-        },
-        {
-            "name": "symfony/polyfill-php82",
-            "version": "1.43.0",
-            "require": {
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php82\\": ""
-                },
-                "files": [
-                    "bootstrap.php"
-                ],
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "license": "MIT",
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.2+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "polyfill",
-                "shim",
-                "compatibility",
-                "portable"
-            ],
-            "version_normalized": "1.43.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php82.git",
-                "reference": "v1.43.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php82/zipball/v1.43.0",
                 "reference": "v1.43.0"
             }
         },
