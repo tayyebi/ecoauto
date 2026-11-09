@@ -60,9 +60,23 @@ final class BootCommand extends Command
                 return true;
             } catch (Throwable $exception) {
                 if ($attempt === $attempts) {
-                    $this->components->error('The database never became reachable: '.$exception->getMessage());
-                    $this->line('  checked '.$attempts.' times, '.($attempts * $delay).'s in total');
-                    $this->line('  set STORE_DB_HOST / STORE_DB_PORT to the server this container can actually reach');
+                    $connection = (array) config('database.connections.'.config('store.landlord_connection'));
+
+                    $this->components->error('The database never became reachable.');
+                    $this->line('  tried       '.$this->describeTarget($connection));
+                    $this->line('  attempts    '.$attempts.' times over '.($attempts * $delay).'s');
+                    $this->line('  last error  '.$exception->getMessage());
+
+                    // DECISION (ops): say which knob is wrong. "Set STORE_DB_HOST"
+                    // is useless when the actual fault is a socket path that
+                    // silently overrides the host - which is exactly what
+                    // happened the first time this failed.
+                    if (! empty($connection['unix_socket'])) {
+                        $this->line('  STORE_DB_SOCKET is set, which makes host and port irrelevant.');
+                        $this->line('  unset it to connect over TCP, or point it at a socket that exists.');
+                    } else {
+                        $this->line('  set STORE_DB_HOST / STORE_DB_PORT to a server this container can reach');
+                    }
 
                     return false;
                 }
@@ -72,6 +86,16 @@ final class BootCommand extends Command
         }
 
         return false;
+    }
+
+    /** Human-readable description of what the connection will actually use. */
+    private function describeTarget(array $connection): string
+    {
+        if (! empty($connection['unix_socket'])) {
+            return 'unix socket '.$connection['unix_socket'];
+        }
+
+        return ($connection['host'] ?? '?').':'.($connection['port'] ?? '?');
     }
 
     private function migrate(): void

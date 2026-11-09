@@ -83,9 +83,12 @@ services:
 
     depends_on:
       db:
-        # Only ordering: the app retries the connection itself, because MySQL
-        # reports "ready" well before it accepts remote logins.
-        condition: service_started
+        # DECISION (infra): wait for the database to be *serving*, not merely
+        # started. MariaDB needs ~6s to initialise InnoDB and only creates its
+        # listener afterwards; `service_started` returns the instant the
+        # container exists, which is far too early. The app also retries, but a
+        # readiness gate removes the common case rather than papering over it.
+        condition: service_healthy
 
     healthcheck:
       # Probes the port the app actually bound, so a changed STORE_PORT cannot
@@ -119,6 +122,16 @@ services:
       MARIADB_DATABASE: ${STORE_DB_LANDLORD:-store_landlord}
       MARIADB_USER: ${STORE_DB_USERNAME:-store}
       MARIADB_PASSWORD: ${STORE_DB_PASSWORD:?set STORE_DB_PASSWORD in .env}
+
+    # DECISION (infra): MariaDB's own readiness signal. `mariadb-admin ping`
+    # returns success only once the server accepts connections, which is the
+    # condition the app actually needs before it can migrate anything.
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 30s
 
     volumes:
       # DECISION (infra): the database files live under ./data/mysql, on the

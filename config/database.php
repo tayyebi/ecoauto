@@ -33,7 +33,16 @@ $mysql = [
     'port' => env('STORE_DB_PORT', '3306'),
     'username' => env('STORE_DB_USERNAME', 'store'),
     'password' => env('STORE_DB_PASSWORD', ''),
-    'unix_socket' => env('STORE_DB_SOCKET', $dataPath.'/mysql/run/mysqld.sock'),
+
+    /*
+     | DECISION (db): `unix_socket` is only honoured when set explicitly, never
+     | from a default. Laravel's MySqlConnector checks `hasSocket()` first and
+     | builds a socket DSN when it is non-empty, which silently ignores host and
+     | port. A defaulted socket path therefore made STORE_DB_HOST=db inert: the
+     | app tried to connect to a socket file inside its own container and failed
+     | forever while MariaDB was up and healthy on the network.
+     */
+    'unix_socket' => env('STORE_DB_SOCKET'),
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix' => '',
