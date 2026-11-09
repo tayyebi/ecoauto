@@ -35,11 +35,16 @@ final class ServeCommand extends Command
         $this->line('  storefront  tenant domains (see accounts and account_domains)');
         $this->line("  control     http://localhost:{$port}/admin");
 
-        // Laravel's own `serve` command takes over this process, so anything
-        // printed after it would never reach the terminal.
+        // DECISION (infra): --no-reload, because without it Laravel refuses
+        // PHP_CLI_SERVER_WORKERS and warns "Only creating a single server",
+        // leaving a storefront that serves one request at a time. The flag
+        // exists to stop `serve` watching .env for changes; inside the
+        // container .env is baked into the process environment and restarts
+        // happen on `git pull`, so the watch has no purpose here.
         $this->call('serve', [
             '--host' => $host,
             '--port' => $port,
+            '--no-reload' => true,
         ]);
 
         return self::SUCCESS;

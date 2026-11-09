@@ -9,6 +9,7 @@ use App\Store;
 use App\Tenancy\Account;
 use App\Tenancy\Provisioner;
 use Illuminate\Database\Seeder;
+use Throwable;
 
 /**
  * DECISION (white-label): the seeder is the only place that knows about
@@ -89,13 +90,37 @@ final class EcoautoTenantSeeder extends Seeder
         $registry->forget();
         $ecoauto = $registry->findOrFail($ecoauto->id);
 
+        // ---------------------------------------------------------- provision
+        // DECISION (bootstrap): provisioning is retried here rather than left to
+        // createAccount(), because the first attempt can legitimately fail - the
+        // application user might not yet hold CREATE on `tenant_%`. Without this
+        // the account row exists, the tenant database does not, and every
+        // storefront request then 500s on a missing table: a broken site
+        // instead of a failed install.
+        if (! $ecoauto->hasDatabase() || ! $provisioner->hasSchema($ecoauto)) {
+            try {
+                $ecoauto = $provisioner->attachDatabase($ecoauto);
+                $provisioner->provision($ecoauto);
+                $ecoauto = $registry->findOrFail($ecoauto->id);
+                $this->command?->line('  tenant database provisioned');
+            } catch (Throwable $exception) {
+                $this->command?->warn('  tenant database NOT provisioned: '.$exception->getMessage());
+                $this->command?->warn('  the storefront will 500 until this is fixed; then run:');
+                $this->command?->warn('    php artisan store:tenant:provision ecoauto --seed');
+            }
+        }
+
         // ------------------------------------------------------------ content
         $connectionName = Store::databases()->use($ecoauto)->getName();
 
         $copied = install_tenant_media($ecoauto);
         $this->command?->line("  media files installed: {$copied}");
 
-        $this->seedContent($connectionName);
+        // Seeding into a database that was never created would fail with the
+        // same access error a second time and hide the first one.
+        if ($provisioner->hasSchema($ecoauto)) {
+            $this->seedContent($connectionName);
+        }
 
         // ----------------------------------------------------------- operator
         // DECISION (infra): the operator address is configuration, not a

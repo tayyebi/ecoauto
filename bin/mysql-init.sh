@@ -27,10 +27,13 @@ fi
 
 # MYSQL_PWD avoids flashing the root password in the process list.
 MYSQL_PWD="${MARIADB_ROOT_PASSWORD}" "${CLIENT}" --protocol=socket -uroot <<SQL
--- Tenant databases are named tenant_<ulid>; a wildcard on the store_ prefix
--- covers them without granting anything on the system schemas.
+-- DECISION (db): two patterns because there are two kinds of database. The
+-- landlord database is store_landlord; tenant databases are tenant_<ulid>.
+-- Granting only store\_% leaves every storefront unable to create its own
+-- schema, which only shows up the first time an account is provisioned.
 GRANT ALL PRIVILEGES ON \`store\\_%\`.* TO '${MARIADB_USER}'@'%';
+GRANT ALL PRIVILEGES ON \`tenant\\_%\`.* TO '${MARIADB_USER}'@'%';
 FLUSH PRIVILEGES;
 SQL
 
-echo "[store-init] granted CREATE on store_% to ${MARIADB_USER}"
+echo "[store-init] granted CREATE on store_\\_% and tenant\\_% to ${MARIADB_USER}"

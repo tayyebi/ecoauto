@@ -71,9 +71,13 @@ Tags in use:
     `$migrations['table'] ?? $migrations`; a nested per-connection shape yields a
     null table and the repository emits `create table `` `. Per-connection paths
     live under `database.migration_paths` and are passed with `--path`.
-16. **Scripts probe for the MySQL client.** MariaDB 11 has no `mysql` binary;
+16. **The grant covers both database prefixes.** The landlord database is
+    `store_landlord`; tenant databases are `tenant_<ulid>`. They share no prefix,
+    so a grant on `store_%` alone leaves every storefront unable to create its
+    own schema — and that only surfaces the first time an account is provisioned.
+17. **Scripts probe for the MySQL client.** MariaDB 11 has no `mysql` binary;
     the client is `mariadb`. Anything that shells out probes
     `command -v mariadb || command -v mysql` instead of assuming.
-17. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
+18. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
     `STORE_ADMIN_PASSWORD` name the seeded administrator, so an installation is
     not permanently attached to one hardcoded address.

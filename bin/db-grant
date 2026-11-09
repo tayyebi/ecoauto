@@ -42,13 +42,24 @@ if [ -z "$CLIENT" ]; then
     exit 1
 fi
 
-echo "granting CREATE on store_% to '${DB_USER}'@'%'"
+echo "granting CREATE on store_\\_% and tenant\\_% to '${DB_USER}'@'%'"
 
 # The SQL is piped rather than passed with -e so the quoting never reaches the
 # host shell: backticks inside double quotes get command-substituted, which is
 # how this goes wrong when typed by hand.
 $COMPOSE exec -T db sh -c "MYSQL_PWD=\"\$MARIADB_ROOT_PASSWORD\" '${CLIENT}' -uroot" <<SQL
+-- DECISION (db): two patterns, because there are two kinds of database and
+-- they do not share a prefix. The landlord database is store_landlord; tenant
+-- databases are tenant_<ulid> (see Account::newDatabaseName). Granting only
+-- store\_% left every tenant database unauthorised, so provisioning a
+-- storefront failed with "Access denied for user 'store'@'%' to database
+-- 'tenant_...'" while the landlord side worked fine.
+--
+-- In a GRANT the underscore is the LIKE wildcard `_`, not a literal underscore,
+-- so these would also match tenantX and storeX. Harmless here: nothing else on
+-- this server is named either way.
 GRANT ALL PRIVILEGES ON \`store\\_%\`.* TO '${DB_USER}'@'%';
+GRANT ALL PRIVILEGES ON \`tenant\\_%\`.* TO '${DB_USER}'@'%';
 FLUSH PRIVILEGES;
 SQL
 
