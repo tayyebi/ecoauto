@@ -1,7 +1,23 @@
-public/
-resources/
-.hugo_build.lock
-*.swp
-*.swo
-*~
+# Everything stateful lives here and is never committed.
+/data/
+# Backup dumps are written under data/backups; never commit them.
+*.sql.gz
+/vendor/
+/bootstrap/cache/*.php
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+.phpunit.result.cache
+.phpunit.cache
+*.log
 .DS_Store
+.env
+.env.backup
+.env.production
+.idea/
+.vscode/
+node_modules/
+_ide_helper.php
+Thumbs.db
+auth.json

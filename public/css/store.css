@@ -1,0 +1,994 @@
+/*
+ * store — storefront stylesheet
+ *
+ * DECISION (styling): a fresh, minimal stylesheet rather than a port of the
+ * legacy theme. Only the page structure and URL map were preserved.
+ *
+ * DECISION (mobile first): this file is written phone-first. Every rule outside
+ * a media query targets the smallest screen, and every `@media` block is a
+ * `min-width` query that progressively adds layout for wider screens. There are
+ * no `max-width` queries anywhere in this project: narrowing a desktop layout
+ * is not how any component here is built.
+ *
+ * DECISION (no JavaScript): the storefront ships zero JavaScript. The mobile
+ * navigation is a horizontally scrollable strip and all disclosure is done with
+ * plain HTML, so nothing depends on script execution.
+ *
+ * DECISION (Farsi only): the document is always `dir="rtl"` and the type stack
+ * is Persian-first; logical properties are used throughout so the layout stays
+ * correct in RTL without mirroring overrides.
+ */
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('/fonts/Vazirmatn-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('/fonts/Vazirmatn-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+}
+
+:root {
+    --ink: #14181f;
+    --ink-soft: #5b6472;
+    --line: #e4e7ec;
+    --surface: #ffffff;
+    --surface-alt: #f6f7f9;
+    --brand: #d93520;
+    --brand-dark: #a82715;
+    --radius: 10px;
+    --gap: 1rem;
+
+    /* Touch targets stay at or above 44px on phones. */
+    --tap: 2.75rem;
+
+    --step-0: 0.95rem;
+    --step-1: 1.05rem;
+    --step-2: 1.3rem;
+    --step-3: clamp(1.4rem, 4.5vw, 2rem);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.85;
+    color: var(--ink);
+    background: var(--surface-alt);
+}
+
+a {
+    color: var(--brand-dark);
+    text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ------------------------------------------------------------ containers
+ * Phone: full bleed minus a small gutter. Wider: a centred, capped column.
+ */
+.container {
+    width: 100%;
+    padding-inline: 1rem;
+    margin-inline: auto;
+}
+
+.skip-link {
+    position: absolute;
+    inset-inline-start: -999px;
+}
+
+.skip-link:focus {
+    inset-inline-start: 1rem;
+    inset-block-start: 1rem;
+    z-index: 10;
+    background: var(--surface);
+    padding: 0.5rem 1rem;
+}
+
+/* ------------------------------------------------------------------ header
+ * Phone: brand and cart on one row, the menu as a horizontally scrollable
+ * strip underneath — no hamburger, therefore no JavaScript.
+ */
+.site-header {
+    background: var(--surface);
+    border-block-end: 1px solid var(--line);
+}
+
+.header-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.5rem var(--gap);
+    padding-block: 0.75rem;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: var(--tap);
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.brand img {
+    border-radius: 8px;
+}
+
+.brand span {
+    font-size: var(--step-1);
+}
+
+.site-nav {
+    grid-column: 1 / -1;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.site-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.site-nav ul {
+    display: flex;
+    gap: 1.1rem;
+    margin: 0;
+    padding: 0 0 0.25rem;
+    list-style: none;
+    width: max-content;
+}
+
+.site-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--ink-soft);
+    white-space: nowrap;
+    border-block-end: 2px solid transparent;
+}
+
+.site-nav a.is-active,
+.site-nav a:hover {
+    color: var(--brand);
+    border-block-end-color: var(--brand);
+    text-decoration: none;
+}
+
+.cart-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: var(--tap);
+    padding-inline: 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: 0.9rem;
+}
+
+.badge {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 999px;
+    padding-inline: 0.45rem;
+    font-size: 0.75rem;
+}
+
+/* -------------------------------------------------------------------- hero
+ * Phone: single column, media above the copy is not needed but the copy leads.
+ */
+main {
+    padding-block: 1.5rem 2.5rem;
+}
+
+.hero {
+    display: grid;
+    gap: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+}
+
+.hero h1 {
+    font-size: var(--step-3);
+    line-height: 1.4;
+    margin: 0 0 0.6rem;
+}
+
+.hero-image {
+    border-radius: var(--radius);
+    width: 100%;
+}
+
+.lead {
+    color: var(--ink-soft);
+    margin-block: 0 1rem;
+}
+
+/* ------------------------------------------------------------------- slabs */
+
+.section {
+    margin-block-start: 2rem;
+}
+
+.section h2,
+.page-header h1 {
+    font-size: var(--step-2);
+    margin-block: 0 0.85rem;
+}
+
+.page-header {
+    margin-block-end: 1.25rem;
+}
+
+.page-header p {
+    color: var(--ink-soft);
+    margin-block: 0;
+}
+
+/* Phone: one column, no fixed minimums that could overflow a 320px screen. */
+.grid {
+    display: grid;
+    gap: var(--gap);
+}
+
+.grid-products,
+.grid-categories,
+.grid-vendors {
+    grid-template-columns: 1fr;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem;
+    color: var(--ink);
+}
+
+a.card {
+    min-height: var(--tap);
+}
+
+a.card:hover {
+    border-color: var(--brand);
+    text-decoration: none;
+}
+
+.card-static {
+    display: block;
+}
+
+.card-link {
+    display: block;
+    color: inherit;
+}
+
+.card-link:hover {
+    text-decoration: none;
+}
+
+.card-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    background: var(--surface-alt);
+    border-radius: 8px;
+    margin-block-end: 0.6rem;
+}
+
+.card-image.placeholder {
+    display: grid;
+    place-items: center;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+}
+
+.card-title {
+    font-size: var(--step-1);
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-meta {
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.card-count {
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+}
+
+.card-icon {
+    font-size: 1.4rem;
+}
+
+/* Phone: the footer stack wraps so the button never squeezes the price. */
+.card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-block-start: 0.75rem;
+    border-block-start: 1px solid var(--line);
+    padding-block-start: 0.75rem;
+}
+
+.price {
+    font-weight: 700;
+    color: var(--brand-dark);
+}
+
+.price-large {
+    font-size: var(--step-2);
+}
+
+/* ---------------------------------------------------------------- buttons
+ * Phone: full-width blocks are the default so every action is easy to hit.
+ */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap);
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--brand);
+    border-radius: 8px;
+    background: var(--brand);
+    color: #fff;
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: pointer;
+}
+
+.button:hover,
+.button:focus-visible {
+    background: var(--brand-dark);
+    border-color: var(--brand-dark);
+    text-decoration: none;
+}
+
+.button-small {
+    font-size: 0.85rem;
+}
+
+.button-ghost {
+    background: transparent;
+    color: var(--brand-dark);
+}
+
+.button-ghost:hover {
+    background: var(--surface-alt);
+    color: var(--brand-dark);
+}
+
+.button-primary {
+    font-weight: 700;
+}
+
+/* -------------------------------------------------------------- breadcrumb */
+
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-block-end: 1rem;
+}
+
+/* ---------------------------------------------------------------- product
+ * Phone: image, then copy, stacked.
+ */
+.product-detail {
+    display: grid;
+    gap: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.product-detail-media img {
+    width: 100%;
+    border-radius: var(--radius);
+}
+
+.spec-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+    margin-block: 1rem;
+    font-size: 0.9rem;
+}
+
+.spec-list dt {
+    color: var(--ink-soft);
+}
+
+.spec-list dd {
+    margin: 0;
+}
+
+.vendors a + a::before {
+    content: '، ';
+    color: var(--ink-soft);
+}
+
+/* Phone: the quantity field and the button stack. */
+.add-form {
+    display: grid;
+    gap: 0.75rem;
+    margin-block: 1rem;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-height: var(--tap);
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    font: inherit;
+    font-size: 1rem; /* 16px keeps mobile Safari from zooming on focus. */
+}
+
+.add-form input[type='number'],
+.qty {
+    max-width: 6rem;
+}
+
+/* ------------------------------------------------------------------ prose */
+
+.prose,
+.prose-page {
+    line-height: 1.95;
+}
+
+.prose h2,
+.prose h3 {
+    margin-block: 1.6rem 0.6rem;
+}
+
+.prose-page {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.15rem;
+}
+
+.prose img {
+    border-radius: var(--radius);
+}
+
+/* ------------------------------------------------------------------- list */
+
+.list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.list-row {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.list-row-link {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: var(--tap);
+    padding: 0.9rem 1rem;
+    color: inherit;
+}
+
+.list-row-link:hover {
+    border-color: var(--brand);
+    text-decoration: none;
+}
+
+.list-row h3 {
+    margin: 0 0 0.25rem;
+    font-size: var(--step-1);
+}
+
+.list-row p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+}
+
+.meta,
+.list-row .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-block-start: 0.5rem;
+}
+
+.list-row-arrow {
+    align-self: center;
+    color: var(--brand);
+}
+
+/* ------------------------------------------------------------------ tables
+ * Phone: a table is not usable at 320px, so rows become stacked cards. Each
+ * cell carries its own label through `data-label`, set in the markup — still
+ * no JavaScript.
+ */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    display: block;
+}
+
+.table thead {
+    /* Column headers are redundant once each cell is labelled. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.table tbody,
+.table tfoot {
+    display: block;
+}
+
+.table tr {
+    display: block;
+    padding-block: 0.5rem;
+    border-block-end: 1px solid var(--line);
+}
+
+.table tr:last-child {
+    border-block-end: 0;
+}
+
+.table td,
+.table th {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    text-align: start;
+}
+
+.table td::before,
+.table tbody th::before {
+    content: attr(data-label);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+}
+
+/* A cell without a label spans the full row. */
+.table td:not([data-label])::before {
+    content: none;
+}
+
+.table td:not([data-label]) {
+    display: block;
+}
+
+.table tfoot th {
+    display: block;
+    padding: 0.6rem 0.9rem;
+}
+
+.contact-grid {
+    display: grid;
+    gap: 1rem;
+    margin-block-end: 1.25rem;
+}
+
+.contact-grid .label {
+    display: block;
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+}
+
+/* Phone: form above the summary. */
+.checkout-grid {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.stack {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.stack label,
+.actions label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+.inline {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.inline .button,
+.inline input[type='checkbox'] {
+    width: auto;
+}
+
+.summary {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.summary li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-block-end: 1px dashed var(--line);
+    padding-block-end: 0.4rem;
+}
+
+.actions {
+    display: grid;
+    gap: 0.6rem;
+    margin-block: 1rem;
+}
+
+.hint,
+.muted {
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+}
+
+.empty {
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.notice {
+    background: #eefaf1;
+    border: 1px solid #bfe6cb;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    margin-block: 1rem;
+}
+
+.errors {
+    background: #fdeeee;
+    border: 1px solid #f3c2c2;
+    border-radius: 8px;
+    padding: 0.7rem 1rem 0.7rem 2rem;
+    margin-block: 1rem;
+}
+
+.card ul {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+    font-size: 0.9rem;
+}
+
+.card ul.cols {
+    columns: 1;
+}
+
+/* -------------------------------------------------------------- pagination
+ * Phone: previous / next side by side, page counter below.
+ */
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-block-start: 1.75rem;
+}
+
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap);
+    padding-inline: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.pagination-link.is-disabled {
+    color: var(--ink-soft);
+    opacity: 0.6;
+}
+
+.pagination-info {
+    flex-basis: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ footer */
+
+.site-footer {
+    background: var(--surface);
+    border-block-start: 1px solid var(--line);
+    padding-block: 1.5rem 1rem;
+    margin-block-start: 2.5rem;
+    font-size: 0.9rem;
+}
+
+.footer-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.footer-title {
+    font-size: var(--step-1);
+    margin-block: 0 0.5rem;
+}
+
+.site-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.site-footer a {
+    display: inline-block;
+    padding-block: 0.25rem; /* Comfortable tap target without a rigid height. */
+}
+
+.footer-bottom {
+    margin-block-start: 1.25rem;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+}
+
+.error {
+    text-align: center;
+    padding-block: 2.5rem;
+}
+
+.error h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+/* ==========================================================================
+ * Wider screens. Everything below only *adds* layout; the phone rules above
+ * remain the base that these build on.
+ * ========================================================================== */
+
+/* Large phones / small tablets. */
+@media (min-width: 30rem) {
+    :root {
+        --gap: 1.25rem;
+    }
+
+    .grid-products,
+    .grid-categories {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .contact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+    }
+
+    .button {
+        width: auto;
+    }
+
+    .add-form {
+        display: flex;
+        align-items: end;
+        gap: 0.75rem;
+    }
+
+    .pagination-info {
+        flex-basis: auto;
+    }
+}
+
+/* Tablets. */
+@media (min-width: 48rem) {
+    .container {
+        padding-inline: 1.5rem;
+    }
+
+    .header-inner {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .site-nav {
+        margin-inline-start: auto;
+        overflow: visible;
+    }
+
+    .site-nav ul {
+        width: auto;
+        flex-wrap: wrap;
+    }
+
+    .hero {
+        grid-template-columns: 1.4fr 1fr;
+        align-items: center;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .product-detail {
+        grid-template-columns: 18rem 1fr;
+        gap: 1.75rem;
+        padding: 1.5rem;
+    }
+
+    .grid-products {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-vendors {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* A real table again: the stacked-card treatment is switched off. */
+    .table {
+        display: table;
+    }
+
+    .table thead {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip-path: none;
+        display: table-header-group;
+    }
+
+    .table tbody {
+        display: table-row-group;
+    }
+
+    .table tfoot {
+        display: table-footer-group;
+    }
+
+    .table tr {
+        display: table-row;
+        padding: 0;
+        border: 0;
+    }
+
+    .table th,
+    .table td {
+        display: table-cell;
+        padding: 0.7rem 0.9rem;
+        border-block-end: 1px solid var(--line);
+    }
+
+    .table td::before,
+    .table tbody th::before {
+        content: none;
+    }
+
+    .table thead th {
+        background: var(--surface-alt);
+        font-weight: 600;
+    }
+
+    .table tfoot th {
+        display: table-cell;
+        background: var(--surface-alt);
+    }
+
+    .checkout-grid {
+        grid-template-columns: 1.4fr 1fr;
+        align-items: start;
+    }
+
+    .card ul.cols {
+        columns: 2;
+    }
+}
+
+/* Desktops. */
+@media (min-width: 64rem) {
+    .container {
+        max-width: 71.25rem;
+        padding-inline: 2rem;
+    }
+
+    .grid-products {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-categories {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-vendors {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

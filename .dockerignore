@@ -1,0 +1,10 @@
+# The app is bind mounted, not copied into an image, so this file only guards
+# against accidental build-context uploads if an image build is ever added.
+.git
+data
+vendor
+node_modules
+.env
+storage/logs
+storage/framework/views
+storage/framework/cache

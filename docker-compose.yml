@@ -1,8 +1,133 @@
+# DECISION (infra): the deploy target runs `git pull` then `docker-compose up -d`.
+# There is no CI, no image registry and no build pipeline, so this file is the
+# entire deployment: one PHP container that serves the checkout, one MySQL
+# container that keeps its data on the host.
+#
+# DECISION (infra): the app is NOT baked into an image. The checkout is bind
+# mounted read-only, so `git pull` followed by a restart is a complete release
+# and there is nothing to rebuild or push.
+
+name: store
+
 services:
-  hugo:
-    build: .
-    ports:
-      - "9020:1313"
-    volumes:
-      - .:/site
+  app:
+    # DECISION (infra): built locally from a 6-line Dockerfile, not pulled from
+    # a registry. There is no image to tag, push or version - compose rebuilds
+    # it in place, and only when the Dockerfile itself changes.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: store-app:dev
     restart: unless-stopped
+
+    # DECISION (infra): the source tree is mounted, not copied. A `git pull` on
+    # the host is instantly live after `docker-compose up -d`, with no image
+    # rebuild step to forget.
+    volumes:
+      - ./:/app:ro
+      # ./data is the only writable path and holds every piece of state:
+      # the MySQL data files, sessions, caches, logs and tenant media.
+      - ./data:/app/data:rw
+      # Disposable, so it lives in a named volume rather than on the host.
+      - storage:/app/storage:rw
+      # `bootstrap/cache` is written on boot (package discovery, config cache,
+      # compiled routes). The checkout is read-only, so it needs its own mount
+      # or the very first request fails with "Please provide a valid cache path".
+      - bootstrap-cache:/app/bootstrap/cache:rw
+      # `vendor/` is a build artefact and is git-ignored, so it cannot come
+      # from the checkout. It lives in a volume that survives restarts; the
+      # entrypoint runs `composer install` into it when it is empty or when
+      # composer.lock changed since the last deploy.
+      - vendor:/app/vendor:rw
+
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      # DECISION (infra): the port is 9020 on the container and 9020 on the
+      # host. The two must stay equal; bin/deploy verifies the host port is
+      # free before it starts anything.
+      STORE_HOST: 0.0.0.0
+      STORE_PORT: ${STORE_PORT:-9020}
+      STORE_DATA_PATH: /app/data
+      # The MySQL container is reachable by service name on the compose
+      # network. 127.0.0.1 here would mean the app container itself.
+      STORE_DB_HOST: db
+      STORE_DB_PORT: 3306
+      # Writable paths, all of them under the mounted data volume.
+      SESSION_DRIVER: file
+      STORE_SESSION_PATH: /app/data/sessions
+      CACHE_STORE: file
+      CACHE_FILE_PATH: /app/data/cache
+      STORE_LOG_PATH: /app/data/logs/laravel.log
+      # DECISION (infra): PHP's built-in server handles one request at a time
+      # unless it forks. A storefront cannot afford that, so it runs a small
+      # worker pool. Each worker is a separate process, which is why sessions
+      # and cache are file-backed and lock-safe.
+      PHP_CLI_SERVER_WORKERS: ${STORE_WORKERS:-4}
+      # Both: the file copy under ./data for post-mortems, and stderr so
+      # `docker compose logs` shows the same thing without an exec.
+      LOG_CHANNEL: stack
+      LOG_STACK: single,stderr
+
+    ports:
+      # DECISION (infra): bound to 0.0.0.0:9020 on the host, not to 127.0.0.1,
+      # so front proxies and health checks from outside can reach it. Ports
+      # below 1024 are avoided on purpose: binding 80 needs either a root
+      # container or a privileged capability, and neither is worth it.
+      - "${STORE_PORT:-9020}:${STORE_PORT:-9020}"
+
+    entrypoint: ["/bin/sh", "/app/bin/container-entrypoint"]
+    command: ["php", "artisan", "store:serve"]
+
+    depends_on:
+      db:
+        # Only ordering: the app retries the connection itself, because MySQL
+        # reports "ready" well before it accepts remote logins.
+        condition: service_started
+
+    healthcheck:
+      # Probes the port the app actually bound, so a changed STORE_PORT cannot
+      # leave a container permanently "unhealthy".
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', (int) (getenv('STORE_PORT') ?: 9020), $e, $s, 2) ? 0 : 1);"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+    networks:
+      - store
+
+  db:
+    # MariaDB rather than Oracle MySQL: it is a drop-in for everything this
+    # schema uses and its image is unencumbered.
+    image: mariadb:11
+    restart: unless-stopped
+
+    environment:
+      MARIADB_ROOT_PASSWORD: ${STORE_DB_ROOT_PASSWORD:?set STORE_DB_ROOT_PASSWORD in .env}
+      MARIADB_DATABASE: ${STORE_DB_LANDLORD:-store_landlord}
+      MARIADB_USER: ${STORE_DB_USERNAME:-store}
+      MARIADB_PASSWORD: ${STORE_DB_PASSWORD:?set STORE_DB_PASSWORD in .env}
+
+    volumes:
+      # DECISION (infra): the database files live under ./data/mysql, on the
+      # host, not in a Docker volume. Stop the stack, tar ./data, and you have
+      # a complete backup of every tenant.
+      - ./data/mysql:/var/lib/mysql:rw
+      # The application creates one database per storefront account at runtime,
+      # so its user needs CREATE. Installing this grant as an init script means
+      # it also survives a fresh volume, not just the initial boot.
+      - ./bin/mysql-init.sh:/docker-entrypoint-initdb.d/10-store-grants.sh:ro
+
+    networks:
+      - store
+
+volumes:
+  storage:
+  vendor:
+  bootstrap-cache:
+
+networks:
+  store:
+    driver: bridge
