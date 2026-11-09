@@ -67,6 +67,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | HTTP binding
+    |--------------------------------------------------------------------------
+    |
+    | The port lives here, not in the serve command signature, so the console
+    | summaries print the truth instead of a stale literal. The deploy target
+    | publishes one port and expects 9020 on it.
+    |
+    */
+
+    'serve' => [
+        // Bind every interface: the host proxies into this process from
+        // outside the machine, so 127.0.0.1 would make the site unreachable.
+        'host' => env('STORE_HOST', '0.0.0.0'),
+
+        // DECISION (infra): 9020 is the canonical bound port. STORE_PORT exists
+        // for local experiments only; production must not vary it.
+        'port' => (int) env('STORE_PORT', 9020),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Storefront behaviour
     |--------------------------------------------------------------------------
     */

@@ -118,9 +118,13 @@ final class EcoautoTenantSeeder extends Seeder
             ['role' => 'owner'],
         );
 
+        $port = config('store.serve.port', 9020);
+
         $this->command?->info('store is ready.');
-        $this->command?->line("  ecoauto storefront: http://www.ecoauto.ir.localhost:8000 (or the DEFAULT account locally)");
-        $this->command?->line('  control plane:      http://localhost:8000/admin');
+        $this->command?->line("  ecoauto storefront: http://www.ecoauto.ir.localhost:{$port} (or the DEFAULT account locally)");
+        // DECISION (infra): the control plane summary uses the loopback host
+        // rather than the bind address, because 0.0.0.0 is not clickable.
+        $this->command?->line("  control plane:      http://localhost:{$port}/admin");
         $this->command?->line('  operator:           admin@ecoauto.ir / password');
     }
 

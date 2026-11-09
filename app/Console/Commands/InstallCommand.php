@@ -57,10 +57,10 @@ final class InstallCommand extends Command
         $this->newLine();
         $this->components->info('store installed.');
         $this->line('  data directory  '.base_path('data'));
-        $this->line('  control plane   http://localhost:8000/admin');
+        $this->line('  control plane   http://localhost:'.config('store.serve.port', 9020).'/admin');
         $this->line('  operator        admin@ecoauto.ir / password');
         $this->newLine();
-        $this->line('Next: `php artisan store:serve` to start the server.');
+        $this->line('Next: `php artisan store:serve` to bind port '.config('store.serve.port', 9020).'.');
 
         return self::SUCCESS;
     }

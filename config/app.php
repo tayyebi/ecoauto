@@ -16,7 +16,9 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
-    'url' => env('APP_URL', 'http://localhost:8000'),
+    // DECISION (infra): the default URL carries the canonical 9020 port, so a
+    // checkout with no .env still generates correct absolute links.
+    'url' => env('APP_URL', 'http://localhost:9020'),
 
     'timezone' => 'Asia/Tehran',
 
