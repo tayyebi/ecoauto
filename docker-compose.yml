@@ -94,7 +94,16 @@ services:
     healthcheck:
       # Probes the port the app actually bound, so a changed STORE_PORT cannot
       # leave a container permanently "unhealthy".
-      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', (int) (getenv('STORE_PORT') ?: 9020), $e, $s, 2) ? 0 : 1);"]
+      #
+      # DECISION (infra): `$$` escapes the dollar sign from Compose. A single
+      # `$` here makes Compose try to interpolate PHP's `$errno` and `$errstr`
+      # as shell variables and warn "The e variable is not set" on every single
+      # command - the escaping is required, not cosmetic, because the payload
+      # is PHP source rather than a shell variable reference.
+      #
+      # The by-reference arguments are deliberately omitted: fsockopen's
+      # signature still fills them, so no PHP variables appear at all.
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', (int) (getenv('STORE_PORT') ?: 9020)) ? 0 : 1);"]
       interval: 30s
       timeout: 5s
       retries: 3
