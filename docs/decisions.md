@@ -75,9 +75,12 @@ Tags in use:
     `store_landlord`; tenant databases are `tenant_<ulid>`. They share no prefix,
     so a grant on `store_%` alone leaves every storefront unable to create its
     own schema — and that only surfaces the first time an account is provisioned.
-17. **Scripts probe for the MySQL client.** MariaDB 11 has no `mysql` binary;
+17. **SQL heredocs are quoted and substituted with sed.** An unquoted heredoc
+    expands backticks and `$(...)`, so a backtick inside a SQL *comment* runs as
+    a command — the grants still applied, which is what made it look harmless.
+18. **Scripts probe for the MySQL client.** MariaDB 11 has no `mysql` binary;
     the client is `mariadb`. Anything that shells out probes
     `command -v mariadb || command -v mysql` instead of assuming.
-18. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
+19. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
     `STORE_ADMIN_PASSWORD` name the seeded administrator, so an installation is
     not permanently attached to one hardcoded address.

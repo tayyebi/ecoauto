@@ -26,14 +26,22 @@ else
 fi
 
 # MYSQL_PWD avoids flashing the root password in the process list.
-MYSQL_PWD="${MARIADB_ROOT_PASSWORD}" "${CLIENT}" --protocol=socket -uroot <<SQL
+# DECISION (infra): quoted heredoc plus sed, not an unquoted heredoc with
+# ${MARIADB_USER}. An unquoted heredoc expands backticks and $(...), so any
+# backtick inside a SQL comment is executed as a command. Same bug as db-grant.
+SQL_TEXT=$(
+    cat <<'SQL'
 -- DECISION (db): two patterns because there are two kinds of database. The
 -- landlord database is store_landlord; tenant databases are tenant_<ulid>.
--- Granting only store\_% leaves every storefront unable to create its own
+-- Granting only store_% leaves every storefront unable to create its own
 -- schema, which only shows up the first time an account is provisioned.
-GRANT ALL PRIVILEGES ON \`store\\_%\`.* TO '${MARIADB_USER}'@'%';
-GRANT ALL PRIVILEGES ON \`tenant\\_%\`.* TO '${MARIADB_USER}'@'%';
+GRANT ALL PRIVILEGES ON `store\_%`.* TO '__DB_USER__'@'%';
+GRANT ALL PRIVILEGES ON `tenant\_%`.* TO '__DB_USER__'@'%';
 FLUSH PRIVILEGES;
 SQL
+)
 
-echo "[store-init] granted CREATE on store_\\_% and tenant\\_% to ${MARIADB_USER}"
+printf '%s\n' "$SQL_TEXT" | sed "s/__DB_USER__/${MARIADB_USER}/g" \
+    | MYSQL_PWD="${MARIADB_ROOT_PASSWORD}" "${CLIENT}" --protocol=socket -uroot
+
+echo "[store-init] granted CREATE on store\\_% and tenant\\_% to ${MARIADB_USER}"
