@@ -43,8 +43,18 @@ Tags in use:
 6. **No JavaScript at all.** All interaction is server-rendered and form-based.
 7. **Mobile first.** Base styles target phones; `min-width` queries add layout.
    There are no `max-width` queries in the project.
-8. **No container images.** A base PHP runtime serves the mapped sources and all
-   mutable state lives under `./data`, which is git-ignored.
-9. **URLs are preserved** exactly from the legacy site, trailing slashes included.
-10. **Cart, checkout and a placeholder payment gateway** exist; the gateway
+8. **Deployment is `git pull` then `docker-compose up -d`.** No CI, no image
+   registry, no build pipeline. The checkout is bind mounted read-only, so a
+   pull plus a restart is a release. Only the runtime image is fixed
+   (`php:8.4-cli`), and the checkout is never baked into it.
+   All mutable state lives under `./data`, which is git-ignored.
+9. **One port, 9020, on both sides of the container.** Above 1024 so the
+   container needs no privileges; identical inside and outside so there is no
+   mapping to misremember. `bin/deploy --check` refuses to start when another
+   service already owns the host port.
+10. **URLs are preserved** exactly from the legacy site, trailing slashes included.
+11. **Cart, checkout and a placeholder payment gateway** exist; the gateway
     charges nothing and is swappable through `PaymentGateway`.
+12. **Boot is idempotent.** `store:boot` runs on every container start: wait for
+    the database, migrate what is outstanding, seed only when the account tree
+    is empty. A restart must never be a repair job.

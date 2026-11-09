@@ -1,0 +1,74 @@
+#!/bin/sh
+# Container entrypoint for `docker-compose up -d`.
+#
+# DECISION (infra): deployment is `git pull` on the host followed by
+# `docker-compose up -d`. Nothing else exists - no CI, no registry. Everything a
+# release needs therefore happens right here, every time the container starts:
+# install PHP dependencies, prepare the writable tree, bring the schema up to
+# date, then hand over to the server.
+#
+# Every step is idempotent on purpose. A restart must be a no-op, not a repair.
+
+set -eu
+
+APP_DIR=/app
+
+log() { printf '[entrypoint] %s\n' "$*"; }
+
+# --------------------------------------------------------------------- .env
+# The checkout is mounted read-only, so this cannot create the file - it can
+# only refuse to continue without one. Silently booting with no configuration
+# produces a confusing database error minutes later instead of an obvious one
+# now.
+if [ ! -f "${APP_DIR}/.env" ]; then
+    log "FATAL: ${APP_DIR}/.env is missing."
+    log "       On the host: cp .env.example .env, fill in the passwords, then ./bin/deploy"
+    exit 1
+fi
+
+if ! grep -q '^APP_KEY=base64:' "${APP_DIR}/.env"; then
+    log "WARNING: APP_KEY is empty; sessions and CSRF tokens cannot be signed."
+    log "         Run ./bin/deploy on the host, or php artisan key:generate."
+fi
+
+# ---------------------------------------------------------------- composer
+# `vendor/` is git-ignored and lives in a named volume, so a freshly pulled
+# checkout has none. composer.lock is the marker: reinstall only when it moves.
+if [ ! -f "${APP_DIR}/vendor/autoload.php" ] || \
+   [ "${APP_DIR}/composer.lock" -nt "${APP_DIR}/vendor/composer/installed.json" ]; then
+    log "installing composer dependencies"
+    composer install --no-interaction --no-progress --prefer-dist \
+        --optimize-autoloader --no-dev
+else
+    log "composer dependencies are current"
+fi
+
+# ---------------------------------------------------------------- ./data tree
+# The bind mount arrives with whatever ownership the host has. Create every
+# directory the app writes to, then let the boot check report anything it still
+# cannot write rather than failing on the first request.
+for dir in data data/cache data/sessions data/logs data/media data/mysql \
+           storage/framework/views storage/framework/cache storage/framework/sessions \
+           storage/logs bootstrap/cache; do
+    mkdir -p "${APP_DIR}/${dir}"
+done
+
+if [ "$(id -u)" = "0" ]; then
+    chown -R www-data:www-data "${APP_DIR}/data" "${APP_DIR}/storage" \
+        "${APP_DIR}/bootstrap/cache" 2>/dev/null || true
+fi
+
+# ---------------------------------------------------------------------- boot
+# Migrate, seed once, verify writable paths. Exits non-zero when the database
+# never appears, which is what makes `up -d` fail loudly instead of serving 500s.
+log "booting"
+php artisan store:boot --seed
+
+# ---------------------------------------------------------------- dev php.ini
+# The built-in server serves one request at a time unless it forks, which a
+# storefront cannot afford. Compose passes the worker count in.
+if [ -n "${PHP_CLI_SERVER_WORKERS:-}" ]; then
+    log "serving with ${PHP_CLI_SERVER_WORKERS} workers on port ${STORE_PORT:-9020}"
+fi
+
+exec "$@"

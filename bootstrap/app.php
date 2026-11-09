@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     // Command classes are registered explicitly rather than by directory scan,
     // so the console boots without a `routes/console.php` side effect.
     ->withCommands([
+        App\Console\Commands\BootCommand::class,
         App\Console\Commands\InstallCommand::class,
         App\Console\Commands\ProvisionTenantCommand::class,
         App\Console\Commands\SeedContentCommand::class,

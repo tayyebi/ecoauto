@@ -1,0 +1,68 @@
+#!/bin/sh
+# Dump every database this installation owns into ./data/backups.
+#
+# DECISION (infra): the databases are created lazily - the landlord one plus one
+# per storefront account, all on the same server - so an operator cannot know in
+# advance which names to dump. Enumerating them from information_schema is the
+# difference between a backup and a backup that silently misses a tenant.
+#
+# Usage: ./bin/db-backup [output-dir]
+
+set -eu
+
+cd "$(dirname "$0")/.."
+
+OUT="${1:-data/backups}"
+STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+mkdir -p "$OUT"
+
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE="docker compose"
+else
+    COMPOSE="docker-compose"
+fi
+
+# Read credentials from .env rather than duplicating them here.
+env_value() {
+    grep -E "^$1=" .env 2>/dev/null | tail -n1 | cut -d= -f2- || true
+}
+
+DB_USER="$(env_value STORE_DB_USERNAME)"; DB_USER="${DB_USER:-store}"
+DB_PASS="$(env_value STORE_DB_PASSWORD)"
+DB_ROOT="$(env_value STORE_DB_ROOT_PASSWORD)"
+
+# Root sees every database; the application user only knows its own.
+RUN_USER=root
+RUN_PASS="$DB_ROOT"
+if [ -z "$RUN_PASS" ]; then
+    RUN_USER="$DB_USER"
+    RUN_PASS="$DB_PASS"
+fi
+
+# Server system schemas are never part of an installation backup.
+IGNORED="'information_schema','mysql','performance_schema','sys'"
+
+echo "dumping every store database into ${OUT}"
+
+DATABASES="$($COMPOSE exec -T -e MYSQL_PWD="$RUN_PASS" db \
+    mysql -u "$RUN_USER" -N -B \
+    -e "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN (${IGNORED}) ORDER BY schema_name" \
+    2>/dev/null | tr -d '\r' | tr '\n' ' ')"
+
+if [ -z "$(echo "$DATABASES" | tr -d ' ')" ]; then
+    echo "error: no databases found; is the stack running?" >&2
+    exit 1
+fi
+
+echo "  databases: ${DATABASES}"
+
+# One call, one consistent snapshot, one file. --databases (not --all-databases)
+# keeps the system schemas out while still emitting CREATE DATABASE statements,
+# so a restore on a fresh server is a single `gunzip | mysql`.
+$COMPOSE exec -T -e MYSQL_PWD="$RUN_PASS" db \
+    mysqldump -u "$RUN_USER" \
+    --single-transaction --quick --skip-lock-tables --databases $DATABASES \
+    | gzip > "$OUT/store-${STAMP}.sql.gz"
+
+echo "done: $(du -h "$OUT/store-${STAMP}.sql.gz" | cut -f1) in ${OUT}/store-${STAMP}.sql.gz"
+echo "restore with: gunzip -c ${OUT}/store-${STAMP}.sql.gz | docker compose exec -T db mysql -u root -p"

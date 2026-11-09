@@ -7,9 +7,13 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 /**
- * DECISION (infra): no container images. A base PHP runtime serves the mapped
- * source tree directly and keeps every piece of mutable state under ./data, so
- * an upgrade is a checkout and a backup is a directory copy.
+ * DECISION (infra): the server is PHP's built-in one, not nginx + php-fpm. The
+ * deployment is a bind-mounted checkout behind a single published port, and a
+ * second web server would add a config file, a socket and a restart step to a
+ * deploy that is deliberately `git pull` plus `docker-compose up -d`.
+ *
+ * DECISION (infra): every piece of mutable state stays under ./data, so an
+ * upgrade is a checkout and a backup is a directory copy.
  */
 final class ServeCommand extends Command
 {

@@ -50,7 +50,7 @@ return [
         'file' => [
             'driver' => 'file',
             'path' => env('CACHE_FILE_PATH', env('STORE_DATA_PATH', base_path('data')).'/cache'),
-            'lock_path' => env('STORE_DATA_PATH', base_path('data')).'/cache/locks',
+            'lock_path' => env('CACHE_FILE_PATH', env('STORE_DATA_PATH', base_path('data')).'/cache').'/locks',
         ],
 
         'storage' => [

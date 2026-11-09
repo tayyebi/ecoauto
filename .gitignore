@@ -1,5 +1,7 @@
 # Everything stateful lives here and is never committed.
 /data/
+# Backup dumps are written under data/backups; never commit them.
+*.sql.gz
 /vendor/
 /bootstrap/cache/*.php
 /storage/framework/cache/data/*

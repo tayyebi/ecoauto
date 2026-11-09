@@ -12,8 +12,11 @@ use Throwable;
 
 /**
  * DECISION (infra): installation is a single command that creates ./data, the
- * landlord schema and tenant #1. There is no image to build and no external
- * provisioning step; the directory is the deployment.
+ * landlord schema and tenant #1. There is no external provisioning step and no
+ * image to build; the directory is the deployment.
+ *
+ * A container start uses `store:boot` instead, which is the idempotent half of
+ * this command: it migrates without needing --force and seeds only once.
  *
  * Creates the ./data tree, the landlord database, the platform account and the
  * first tenant, then seeds the legacy ecoauto content into it. Everything it

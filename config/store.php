@@ -77,13 +77,30 @@ return [
     */
 
     'serve' => [
-        // Bind every interface: the host proxies into this process from
-        // outside the machine, so 127.0.0.1 would make the site unreachable.
+        // DECISION (infra): bind 0.0.0.0 inside the container. The port is
+        // published on the host by docker-compose, so anything narrower than
+        // 0.0.0.0 here would make the published port refuse connections.
         'host' => env('STORE_HOST', '0.0.0.0'),
 
-        // DECISION (infra): 9020 is the canonical bound port. STORE_PORT exists
-        // for local experiments only; production must not vary it.
+        // DECISION (infra): 9020 is the canonical port and it is the same
+        // number on both sides - container and host. One number to set, one
+        // number to remember, and no `80:9020` style translation to misread.
         'port' => (int) env('STORE_PORT', 9020),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Boot
+    |--------------------------------------------------------------------------
+    |
+    | Deployment is `git pull` and `docker-compose up -d`, so the entrypoint
+    | has to survive the database container not being ready yet.
+    |
+    */
+
+    'boot' => [
+        'db_wait_attempts' => (int) env('STORE_DB_WAIT_ATTEMPTS', 30),
+        'db_wait_seconds' => (int) env('STORE_DB_WAIT_SECONDS', 2),
     ],
 
     /*

@@ -60,7 +60,9 @@ return [
     |
     */
 
-    'files' => env('STORE_DATA_PATH', base_path('data')).'/sessions',
+    // DECISION (infra): stateful paths default under ./data, which is the only
+    // directory the container mounts writable besides storage/.
+    'files' => env('STORE_SESSION_PATH', env('STORE_DATA_PATH', base_path('data')).'/sessions'),
 
     /*
     |--------------------------------------------------------------------------
