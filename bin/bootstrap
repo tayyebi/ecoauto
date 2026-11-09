@@ -24,8 +24,8 @@ fail() { printf '[bootstrap] ERROR: %s\n' "$*" >&2; exit 1; }
 # ===========================================================================
 # Container mode
 # ===========================================================================
-# Runs as the image's entrypoint. The checkout is mounted read-only, so this
-# only ever writes to ./data, the storage volume and the bootstrap-cache volume.
+# Runs as the image's entrypoint. The checkout is one read-write bind mount, so
+# ./data, storage/ and bootstrap/cache/ are all real paths inside it.
 # ===========================================================================
 container_mode() {
     cd "$APP_DIR"
@@ -53,9 +53,13 @@ container_mode() {
         mkdir -p "$APP_DIR/$dir"
     done
 
-    if [ "$(id -u)" = "0" ]; then
-        chown -R www-data:www-data "$APP_DIR/data" "$APP_DIR/storage" \
-            "$APP_DIR/bootstrap/cache" 2>/dev/null || true
+    # DECISION (infra): no chown. The checkout is a writable bind mount of the
+    # host's working tree, so `chown -R www-data` would hand the operator's own
+    # git checkout to another user - surprising, and it survives outside the
+    # container. The container runs as root, which can write the host files
+    # regardless of their owner, so nothing needs re-owning.
+    if [ "$(id -u)" != "0" ]; then
+        log "warning: not running as root; writes to the checkout may fail"
     fi
 
     # Migrate what is outstanding, seed only an empty account tree, verify the
