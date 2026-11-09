@@ -58,10 +58,15 @@ Tags in use:
 12. **Boot is idempotent.** `store:boot` runs on every container start: wait for
     the database, migrate what is outstanding, seed only when the account tree
     is empty. A restart must never be a repair job.
-13. **One install script.** `bin/bootstrap` does the first install on the host
+13. **The checkout is one read-write bind mount.** Not read-only with named
+    volumes for `vendor/`, `storage/` and `bootstrap/cache/`: Docker creates each
+    mount point by `mkdir`-ing it inside the parent mount, which fails on a
+    read-only parent (`mkdirat .../app/vendor: read-only file system`). The
+    directories it writes into are git-ignored, so `git pull` stays clean.
+14. **One install script.** `bin/bootstrap` does the first install on the host
     and, with `IN_CONTAINER=1`, runs as the container entrypoint. `bin/deploy`
     delegates to it rather than reimplementing the preflight. Two scripts that
     both know how to install are two scripts that eventually disagree.
-14. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
+15. **The first operator is configuration.** `STORE_ADMIN_EMAIL` and
     `STORE_ADMIN_PASSWORD` name the seeded administrator, so an installation is
     not permanently attached to one hardcoded address.

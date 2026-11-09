@@ -80,11 +80,11 @@ Compose maps `${STORE_PORT}:${STORE_PORT}`, so one variable moves both ends.
 ### What happens on every start
 
 The same `bin/bootstrap` script runs as the container entrypoint, told apart by
-`IN_CONTAINER=1`. The checkout is mounted read-only, so in container mode it only
-ever writes to `./data`, the `storage` volume and the `bootstrap-cache` volume.
-It runs `composer install` when `composer.lock` is newer than the installed
-vendor tree, creates the writable directories, then runs
-`php artisan store:boot --seed`:
+`IN_CONTAINER=1`. The checkout is bind mounted read-write, so `vendor/`,
+`storage/` and `bootstrap/cache/` are real paths inside it — all three are
+git-ignored, so a `git pull` never conflicts with them. It runs `composer
+install` when `composer.lock` is newer than the installed vendor tree, creates
+the writable directories, then runs `php artisan store:boot --seed`:
 
 - waits for MariaDB to accept connections (retries, so a slow db container does
   not break the deploy)

@@ -20,25 +20,21 @@ services:
     image: store-app:dev
     restart: unless-stopped
 
-    # DECISION (infra): the source tree is mounted, not copied. A `git pull` on
-    # the host is instantly live after `docker-compose up -d`, with no image
-    # rebuild step to forget.
+    # DECISION (infra): the source tree is mounted read-write, not copied. A
+    # `git pull` on the host is instantly live after `docker-compose up -d`,
+    # with no image to rebuild.
+    #
+    # DECISION (infra): read-write, specifically. This was `:ro` with separate
+    # named volumes for vendor, storage and bootstrap/cache, which cannot work:
+    # Docker creates a mount point by mkdir-ing it inside the parent mount, and
+    # mkdir inside a read-only bind fails with
+    #   "mkdirat .../app/vendor: read-only file system"
+    # before the container ever starts. Every writable subpath of a read-only
+    # root is a mount point that cannot be created. One read-write mount removes
+    # the entire class of failure, and the things written into it (vendor/,
+    # storage/, bootstrap/cache/) are already git-ignored.
     volumes:
-      - ./:/app:ro
-      # ./data is the only writable path and holds every piece of state:
-      # the MySQL data files, sessions, caches, logs and tenant media.
-      - ./data:/app/data:rw
-      # Disposable, so it lives in a named volume rather than on the host.
-      - storage:/app/storage:rw
-      # `bootstrap/cache` is written on boot (package discovery, config cache,
-      # compiled routes). The checkout is read-only, so it needs its own mount
-      # or the very first request fails with "Please provide a valid cache path".
-      - bootstrap-cache:/app/bootstrap/cache:rw
-      # `vendor/` is a build artefact and is git-ignored, so it cannot come
-      # from the checkout. It lives in a volume that survives restarts; the
-      # entrypoint runs `composer install` into it when it is empty or when
-      # composer.lock changed since the last deploy.
-      - vendor:/app/vendor:rw
+      - ./:/app:rw
 
     working_dir: /app
     env_file:
@@ -136,11 +132,6 @@ services:
 
     networks:
       - store
-
-volumes:
-  storage:
-  vendor:
-  bootstrap-cache:
 
 networks:
   store:
