@@ -73,8 +73,18 @@ class Category extends Model
         return route('categories.show', ['category' => $this->slug], absolute: false);
     }
 
+    /**
+     * Bind this instance to an account's database.
+     *
+     * DECISION (db): `$this->setConnection()` mutates the model and returns
+     * the model, so it is not interchangeable with `newQuery()`. Declared
+     * return type is `self` and that is what it returns - a builder here would
+     * silently break every caller that expects a Category.
+     */
     public function forAccount(TenantAccount $account): self
     {
-        return $this->setConnection($account->connection()->getName());
+        $this->setConnection($account->connection()->getName());
+
+        return $this;
     }
 }
