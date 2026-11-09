@@ -31,7 +31,11 @@ final class ResolveAccount
         $account = $this->resolveSessionAccount($request)
             ?? Store::resolver()->forRequest($request);
 
-        $context->setPlatformHost($account === null || ! $account->hasDatabase());
+        // `markPlatformHost`, not `setPlatformHost`: the context exposes the
+        // guarded-style name pair markPlatformHost()/onPlatformHost(). The
+        // wrong name is a fatal on *every* web request, so every route -
+        // including the front page - answered 500 before reaching a controller.
+        $context->markPlatformHost($account === null || ! $account->hasDatabase());
 
         if ($account !== null) {
             $context->set($account);

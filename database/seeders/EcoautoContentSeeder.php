@@ -50,9 +50,14 @@ final class EcoautoContentSeeder extends Seeder
     /** An Eloquent builder bound to the tenant connection. */
     private function model(string $class): \Illuminate\Database\Eloquent\Builder
     {
-        $query = $class::query();
-
-        return $this->connection !== null ? $query->setConnection($this->connection) : $query;
+        // DECISION (db): `Model::on()`, never `$query->setConnection()`.
+        // `setConnection()` lives on the *model*, not on the query builder -
+        // Builder has no such method and forwards unknown calls to the base
+        // query builder, which throws BadMethodCallException. `on()` also pins
+        // the connection on the model instance, so relations (categories(),
+        // vendors(), items()) inherit it instead of falling back to the
+        // default connection.
+        return $class::on($this->connection);
     }
 
     public function run(): void
@@ -150,15 +155,17 @@ final class EcoautoContentSeeder extends Seeder
                     continue;
                 }
 
-                $model = $this->model(Category::class)->create([
-                    'parent_id' => $parent !== null ? $this->categoryIds[$parent] : null,
-                    'slug' => $category['slug'],
-                    'title' => $category['title'],
-                    'description' => $category['description'],
-                    'icon' => $category['icon'],
-                    'position' => 0,
-                    'is_published' => true,
-                ]);
+                $model = $this->model(Category::class)->updateOrCreate(
+                    ['slug' => $category['slug']],
+                    [
+                        'parent_id' => $parent !== null ? $this->categoryIds[$parent] : null,
+                        'title' => $category['title'],
+                        'description' => $category['description'],
+                        'icon' => $category['icon'],
+                        'position' => 0,
+                        'is_published' => true,
+                    ],
+                );
 
                 $this->categoryIds[$category['slug']] = (int) $model->getKey();
             }
@@ -174,16 +181,18 @@ final class EcoautoContentSeeder extends Seeder
     private function seedVendors(): void
     {
         foreach ($this->snapshot['vendors'] ?? [] as $vendor) {
-            $model = $this->model(Vendor::class)->create([
-                'slug' => $vendor['slug'],
-                'title' => $vendor['title'],
-                'description' => $vendor['description'],
-                'body' => $this->body($vendor['body'] ?? null, (bool) ($vendor['body_is_html'] ?? false)),
-                'email' => $vendor['email'],
-                'phone' => $vendor['phone'],
-                'website' => $vendor['website'],
-                'is_published' => true,
-            ]);
+            $model = $this->model(Vendor::class)->updateOrCreate(
+                ['slug' => $vendor['slug']],
+                [
+                    'title' => $vendor['title'],
+                    'description' => $vendor['description'],
+                    'body' => $this->body($vendor['body'] ?? null, (bool) ($vendor['body_is_html'] ?? false)),
+                    'email' => $vendor['email'],
+                    'phone' => $vendor['phone'],
+                    'website' => $vendor['website'],
+                    'is_published' => true,
+                ],
+            );
 
             $this->vendorIds[$vendor['slug']] = (int) $model->getKey();
         }
@@ -192,24 +201,26 @@ final class EcoautoContentSeeder extends Seeder
     private function seedProducts(): void
     {
         foreach ($this->snapshot['products'] ?? [] as $product) {
-            $model = $this->model(Product::class)->create([
-                'slug' => $product['slug'],
-                'title' => $product['title'],
-                'description' => $product['description'],
-                'body' => $product['body'],
-                'sku' => $product['sku'],
-                'brand' => $product['brand'],
-                'category_label' => $product['category_label'],
-                'country_of_origin' => $product['country_of_origin'],
-                'material' => $product['material'],
-                'material_en' => $product['material_en'],
-                'gtin' => $product['gtin'],
-                'price' => $product['price'],
-                'currency' => $product['currency'] ?? 'IRR',
-                'image_path' => $this->imagePath($product['image'] ?? null),
-                'is_published' => true,
-                'position' => 0,
-            ]);
+            $model = $this->model(Product::class)->updateOrCreate(
+                ['slug' => $product['slug']],
+                [
+                    'title' => $product['title'],
+                    'description' => $product['description'],
+                    'body' => $product['body'],
+                    'sku' => $product['sku'],
+                    'brand' => $product['brand'],
+                    'category_label' => $product['category_label'],
+                    'country_of_origin' => $product['country_of_origin'],
+                    'material' => $product['material'],
+                    'material_en' => $product['material_en'],
+                    'gtin' => $product['gtin'],
+                    'price' => $product['price'],
+                    'currency' => $product['currency'] ?? 'IRR',
+                    'image_path' => $this->imagePath($product['image'] ?? null),
+                    'is_published' => true,
+                    'position' => 0,
+                ],
+            );
 
             $categoryIds = array_values(array_filter(
                 array_map(fn (string $slug) => $this->categoryIds[$slug] ?? null, $product['categories'] ?? []),
@@ -232,16 +243,18 @@ final class EcoautoContentSeeder extends Seeder
     private function seedPosts(): void
     {
         foreach ($this->snapshot['posts'] ?? [] as $post) {
-            $model = $this->model(Post::class)->create([
-                'slug' => $post['slug'],
-                'title' => $post['title'],
-                'description' => $post['description'],
-                'body' => $post['body'],
-                'published_at' => $post['published_at'] !== null
-                    ? date('Y-m-d H:i:s', strtotime((string) $post['published_at']))
-                    : now(),
-                'is_published' => true,
-            ]);
+            $model = $this->model(Post::class)->updateOrCreate(
+                ['slug' => $post['slug']],
+                [
+                    'title' => $post['title'],
+                    'description' => $post['description'],
+                    'body' => $post['body'],
+                    'published_at' => $post['published_at'] !== null
+                        ? date('Y-m-d H:i:s', strtotime((string) $post['published_at']))
+                        : now(),
+                    'is_published' => true,
+                ],
+            );
 
             $categoryIds = array_values(array_filter(
                 array_map(fn (string $slug) => $this->categoryIds[$slug] ?? null, $post['categories'] ?? []),
@@ -256,20 +269,29 @@ final class EcoautoContentSeeder extends Seeder
     private function seedPages(): void
     {
         foreach ($this->snapshot['pages'] ?? [] as $page) {
-            $this->model(Page::class)->create([
-                'slug' => $page['slug'],
-                'title' => $page['title'],
-                'description' => $page['description'],
-                'body' => $page['body'],
-                'layout' => $page['slug'] === 'sitemap' ? 'sitemap' : 'default',
-                'is_published' => true,
-            ]);
+            $this->model(Page::class)->updateOrCreate(
+                ['slug' => $page['slug']],
+                [
+                    'title' => $page['title'],
+                    'description' => $page['description'],
+                    'body' => $page['body'],
+                    'layout' => $page['slug'] === 'sitemap' ? 'sitemap' : 'default',
+                    'is_published' => true,
+                ],
+            );
         }
     }
 
     private function seedMenus(): void
     {
-        $menu = $this->model(Menu::class)->create(['handle' => 'main', 'name' => 'منوی اصلی']);
+        $menu = $this->model(Menu::class)->updateOrCreate(
+            ['handle' => 'main'],
+            ['name' => 'منوی اصلی'],
+        );
+
+        // Items carry no natural key, so they are rebuilt. Upserting them would
+        // append a second copy of the navigation on every re-run.
+        $menu->items()->delete();
 
         foreach ([
             ['label' => 'صفحه اصلی', 'url' => '/'],

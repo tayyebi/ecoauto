@@ -92,3 +92,19 @@ Tags in use:
     "Connection refused" while MariaDB was healthy. Landlord is the same server
     as every tenant, so it is the only correct base — and an unresolvable
     landlord config now throws instead of falling back to a default that lies.
+21. **`Model::on()` binds a query to a connection, not `$builder->setConnection()`.**
+    `setConnection()` exists only on the model and on the migrator. An Eloquent
+    builder has no such method, and its `__call` forwards unknown names to the
+    base query builder, which throws `BadMethodCallException`. On a *model*,
+    `setConnection()` mutates that instance and returns it — so a method
+    declared to return a builder must not rely on it. `Model::on($name)` does
+    both correctly: it pins the connection on the model so relations inherit
+    it, then hands back a builder.
+22. **The content seeder is idempotent.** It is reachable from the repair
+    command an operator is told to re-run, so a second run must not be a
+    failure. Everything upserts on its natural key (slug, handle, setting key);
+    menu items have no natural key and are rebuilt inside the transaction.
+23. **Names on a context object are verified, never assumed.** `ResolveAccount`
+    called `setPlatformHost()` where the class exposes `markPlatformHost()`.
+    The middleware runs on every web request, so a wrong name is not a bug in
+    one feature: every route answered 500, including the front page.
