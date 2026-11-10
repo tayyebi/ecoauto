@@ -20,8 +20,11 @@ final class AppServiceProvider extends ServiceProvider
     {
         // Everything is server-rendered markup; the storefront never relies on
         // JavaScript, so pagination is plain links.
-        Paginator::defaultView('pagination::store');
-        Paginator::defaultSimpleView('pagination::store');
+        // This template lives under resources/views/pagination, so use the
+        // application view name rather than Laravel's `pagination::` package
+        // namespace (which points at the framework's pagination templates).
+        Paginator::defaultView('pagination.store');
+        Paginator::defaultSimpleView('pagination.store');
 
         // Absolute URLs (canonicals, payment callbacks) must point at the host
         // the visitor actually used, not at whatever APP_URL says.
