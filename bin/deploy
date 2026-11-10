@@ -26,7 +26,7 @@ while [ $# -gt 0 ]; do
         --down) ACTION=down; shift ;;
         --restart) ACTION=restart; shift ;;
         -h|--help)
-            sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
             exit 0 ;;
         *)
             # --port/--check belong to bootstrap; forward them unchanged.
