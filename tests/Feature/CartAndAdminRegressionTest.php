@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\ResolveAccount;
 use App\Models\Order;
 use App\Models\PaymentIntent;
 use App\Models\Product;
 use App\Models\User;
 use App\Store;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -37,6 +40,32 @@ final class CartAndAdminRegressionTest extends TestCase
             'tenant/0001_01_01_000000_create_tenant_schema.php',
         ] as $migration) {
             (require database_path('migrations/'.$migration))->up();
+        }
+    }
+
+    public function test_web_middleware_starts_session_before_resolving_account_and_binding_models(): void
+    {
+        $router = $this->app['router'];
+
+        foreach (['admin.login', 'admin.dashboard', 'cart.add'] as $name) {
+            $route = $router->getRoutes()->getByName($name);
+            $this->assertNotNull($route);
+            $middleware = $router->gatherRouteMiddleware($route);
+
+            foreach ([StartSession::class, ResolveAccount::class, SubstituteBindings::class] as $class) {
+                $this->assertSame(1, count(array_keys($middleware, $class, true)), $name.' must contain '.$class.' exactly once');
+            }
+
+            $this->assertLessThan(
+                array_search(ResolveAccount::class, $middleware, true),
+                array_search(StartSession::class, $middleware, true),
+                $name.' must start the session before resolving the account',
+            );
+            $this->assertLessThan(
+                array_search(SubstituteBindings::class, $middleware, true),
+                array_search(ResolveAccount::class, $middleware, true),
+                $name.' must resolve the account before binding models',
+            );
         }
     }
 
