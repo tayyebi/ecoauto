@@ -17,11 +17,15 @@ final class DashboardController extends BaseAdminController
 {
     public function index(Request $request): View
     {
-        $account = $this->account();
+        $account = Store::current();
+
+        if ($account !== null) {
+            abort_unless($this->user()->canAccess($account), 403, 'دسترسی به این حساب ندارید.');
+        }
 
         $counts = [];
 
-        if ($account->hasDatabase()) {
+        if ($account !== null && $account->hasDatabase()) {
             $counts = [
                 'products' => Product::query()->count(),
                 'posts' => Post::query()->count(),
@@ -35,9 +39,9 @@ final class DashboardController extends BaseAdminController
         return view('admin.dashboard', $this->shareContext($request, [
             'meta' => ['title' => 'داشبورد'],
             'counts' => $counts,
-            'children' => Store::resolver()->registry()->children($account),
-            'domains' => Store::resolver()->registry()->domainsFor($account),
-            'recentOrders' => $account->hasDatabase()
+            'children' => $account !== null ? Store::resolver()->registry()->children($account) : [],
+            'domains' => $account !== null ? Store::resolver()->registry()->domainsFor($account) : [],
+            'recentOrders' => $account !== null && $account->hasDatabase()
                 ? Order::query()->latest()->limit(5)->get()
                 : collect(),
         ]));

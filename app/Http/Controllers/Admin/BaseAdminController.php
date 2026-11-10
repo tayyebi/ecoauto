@@ -42,6 +42,26 @@ abstract class BaseAdminController extends Controller
         return $account;
     }
 
+    /** The account, requiring a provisioned storefront database. */
+    protected function storefrontAccount(): Account
+    {
+        $account = $this->account();
+
+        abort_unless($account->hasDatabase(), 404, 'این حساب فروشگاه ندارد.');
+
+        return $account;
+    }
+
+    /** The account, requiring a provisioned storefront database and write access. */
+    protected function managedStorefrontAccount(): Account
+    {
+        $account = $this->storefrontAccount();
+
+        abort_unless($this->user()->canEdit($account), 403, 'اجازه ویرایش این حساب را ندارید.');
+
+        return $account;
+    }
+
     /**
      * Every admin screen shares this context: the account switcher needs the
      * list of reachable accounts and the impersonation banner needs to know

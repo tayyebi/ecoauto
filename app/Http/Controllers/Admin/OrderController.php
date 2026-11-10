@@ -19,7 +19,7 @@ final class OrderController extends BaseAdminController
 
     public function index(Request $request): View
     {
-        $account = $this->account();
+        $account = $this->storefrontAccount();
 
         $query = Order::query()->with('customer')->latest();
 
@@ -37,7 +37,7 @@ final class OrderController extends BaseAdminController
 
     public function show(Request $request, Order $order): View
     {
-        $this->account();
+        $this->storefrontAccount();
 
         return view('admin.orders.show', $this->shareContext($request, [
             'meta' => ['title' => 'سفارش '.$order->number],
@@ -47,7 +47,7 @@ final class OrderController extends BaseAdminController
 
     public function update(Request $request, Order $order): RedirectResponse
     {
-        $account = $this->managedAccount();
+        $account = $this->managedStorefrontAccount();
 
         $data = $request->validate([
             'status' => ['required', Rule::in([

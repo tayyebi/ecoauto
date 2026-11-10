@@ -53,13 +53,9 @@ Route::get('/media/{path}', [\App\Http\Controllers\MediaController::class, 'show
     ->where('path', '.*')
     ->name('media.show');
 
-// Fixed pages keep their legacy slugs. Anything else at the root is resolved
-// against the tenant's own `pages` table so tenants can publish extra pages.
+// Fixed pages keep their legacy slugs.
 Route::get('/about', [Storefront\PageController::class, 'about'])->name('pages.about');
 Route::get('/contact', [Storefront\PageController::class, 'contact'])->name('pages.contact');
-Route::get('/{slug}', [Storefront\PageController::class, 'show'])
-    ->where('slug', '[^/]+')
-    ->name('pages.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -132,3 +128,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 require __DIR__.'/admin-content.php';
+
+// Anything else at the root is resolved against the tenant's own `pages` table
+// so tenants can publish extra pages. Registered last so explicit root paths
+// (/admin, /cart, /checkout) match before this catch-all segment route.
+Route::get('/{slug}', [Storefront\PageController::class, 'show'])
+    ->where('slug', '[^/]+')
+    ->name('pages.show');

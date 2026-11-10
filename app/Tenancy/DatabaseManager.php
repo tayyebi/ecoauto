@@ -104,7 +104,7 @@ final class DatabaseManager
             }
         }
 
-        if (empty($config['host']) && empty($config['unix_socket'])) {
+        if (($config['driver'] ?? null) !== 'sqlite' && empty($config['host']) && empty($config['unix_socket'])) {
             throw new RuntimeException(
                 'The tenant connection would have no host and no socket; check STORE_DB_HOST.'
             );
@@ -117,6 +117,15 @@ final class DatabaseManager
     public function use(Account $account): ConnectionInterface
     {
         return $this->connectionFor($account, asDefault: true);
+    }
+
+    /** Restore the landlord connection as the default connection for this request. */
+    public function useLandlord(): ConnectionInterface
+    {
+        $landlord = (string) config('store.landlord_connection', 'landlord');
+        Config::set('database.default', $landlord);
+
+        return DB::connection($landlord);
     }
 
     public function forget(?Account $account = null): void

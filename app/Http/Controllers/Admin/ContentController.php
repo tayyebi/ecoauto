@@ -68,6 +68,8 @@ abstract class ContentController extends BaseAdminController
 
     public function index(Request $request)
     {
+        $this->storefrontAccount();
+
         $model = $this->model();
         $query = $model::query();
 
@@ -85,7 +87,7 @@ abstract class ContentController extends BaseAdminController
 
     public function create(Request $request)
     {
-        $this->managedAccount();
+        $this->managedStorefrontAccount();
 
         return view("admin.{$this->folder()}.form", $this->shareContext($request, array_merge([
             'meta' => ['title' => 'افزودن '.$this->noun()],
@@ -96,7 +98,7 @@ abstract class ContentController extends BaseAdminController
 
     public function edit(Request $request, string $id)
     {
-        $this->managedAccount();
+        $this->managedStorefrontAccount();
 
         $model = $this->model();
         $item = $model::query()->findOrFail($id);
@@ -110,7 +112,7 @@ abstract class ContentController extends BaseAdminController
 
     public function store(Request $request): RedirectResponse
     {
-        $account = $this->managedAccount();
+        $account = $this->managedStorefrontAccount();
 
         $data = $request->validate($this->rules(null));
         $data = $this->prepare($data, null);
@@ -129,7 +131,7 @@ abstract class ContentController extends BaseAdminController
 
     public function update(Request $request, string $id): RedirectResponse
     {
-        $account = $this->managedAccount();
+        $account = $this->managedStorefrontAccount();
 
         $model = $this->model();
         $item = $model::query()->findOrFail($id);
@@ -150,7 +152,7 @@ abstract class ContentController extends BaseAdminController
 
     public function destroy(Request $request, string $id): RedirectResponse
     {
-        $account = $this->managedAccount();
+        $account = $this->managedStorefrontAccount();
 
         $model = $this->model();
         $item = $model::query()->findOrFail($id);
