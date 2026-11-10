@@ -48,12 +48,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "v0.17.2"
+                "reference": "0.17.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/v0.17.2",
-                "reference": "v0.17.2"
+                "url": "https://api.github.com/repos/brick/math/zipball/0.17.2",
+                "reference": "0.17.2"
             }
         },
         {
@@ -99,13 +99,13 @@
             "version_normalized": "3.2.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/carbonphp/carbon-doctrine-types.git",
-                "reference": "v3.2.1"
+                "url": "https://github.com/CarbonPHP/carbon-doctrine-types.git",
+                "reference": "3.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carbonphp/carbon-doctrine-types/zipball/v3.2.1",
-                "reference": "v3.2.1"
+                "url": "https://api.github.com/repos/CarbonPHP/carbon-doctrine-types/zipball/3.2.1",
+                "reference": "3.2.1"
             }
         },
         {
@@ -171,12 +171,12 @@
             "version_normalized": "3.0.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dflydev/dot-access-data.git",
+                "url": "https://github.com/dflydev/dflydev-dot-access-data.git",
                 "reference": "v3.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dflydev/dot-access-data/zipball/v3.0.3",
+                "url": "https://api.github.com/repos/dflydev/dflydev-dot-access-data/zipball/v3.0.3",
                 "reference": "v3.0.3"
             }
         },
@@ -245,12 +245,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "v2.1.1"
+                "reference": "2.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/v2.1.1",
-                "reference": "v2.1.1"
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/2.1.1",
+                "reference": "2.1.1"
             }
         },
         {
@@ -303,12 +303,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/lexer.git",
-                "reference": "v3.0.3"
+                "reference": "3.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/lexer/zipball/v3.0.3",
-                "reference": "v3.0.3"
+                "url": "https://api.github.com/repos/doctrine/lexer/zipball/3.0.3",
+                "reference": "3.0.3"
             }
         },
         {
@@ -414,13 +414,13 @@
             "version_normalized": "4.0.4.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/egulias/email-validator.git",
-                "reference": "v4.0.4"
+                "url": "https://github.com/egulias/EmailValidator.git",
+                "reference": "4.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/email-validator/zipball/v4.0.4",
-                "reference": "v4.0.4"
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/4.0.4",
+                "reference": "4.0.4"
             },
             "type": "library"
         },
@@ -523,12 +523,12 @@
             "version_normalized": "1.2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/graham-campbell/result-type.git",
+                "url": "https://github.com/GrahamCampbell/Result-Type.git",
                 "reference": "v1.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/graham-campbell/result-type/zipball/v1.2.0",
+                "url": "https://api.github.com/repos/GrahamCampbell/Result-Type/zipball/v1.2.0",
                 "reference": "v1.2.0"
             },
             "type": "library"
@@ -634,13 +634,13 @@
             "version_normalized": "7.16.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzlehttp/guzzle.git",
-                "reference": "v7.16.1"
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "7.16.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/guzzle/zipball/v7.16.1",
-                "reference": "v7.16.1"
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/7.16.1",
+                "reference": "7.16.1"
             },
             "type": "library"
         },
@@ -701,13 +701,13 @@
             "version_normalized": "2.6.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzlehttp/promises.git",
-                "reference": "v2.6.0"
+                "url": "https://github.com/guzzle/promises.git",
+                "reference": "2.6.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/promises/zipball/v2.6.0",
-                "reference": "v2.6.0"
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/2.6.0",
+                "reference": "2.6.0"
             },
             "type": "library"
         },
@@ -803,13 +803,13 @@
             "version_normalized": "2.13.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzlehttp/psr7.git",
-                "reference": "v2.13.2"
+                "url": "https://github.com/guzzle/psr7.git",
+                "reference": "2.13.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/psr7/zipball/v2.13.2",
-                "reference": "v2.13.2"
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/2.13.2",
+                "reference": "2.13.2"
             },
             "type": "library"
         },
@@ -872,12 +872,12 @@
             "version_normalized": "1.0.11.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzlehttp/uri-template.git",
+                "url": "https://github.com/guzzle/uri-template.git",
                 "reference": "v1.0.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzlehttp/uri-template/zipball/v1.0.11",
+                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/v1.0.11",
                 "reference": "v1.0.11"
             },
             "type": "library"
@@ -1308,13 +1308,13 @@
             "version_normalized": "2.10.7.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/commonmark.git",
-                "reference": "v2.10.7"
+                "url": "https://github.com/thephpleague/commonmark.git",
+                "reference": "2.10.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/commonmark/zipball/v2.10.7",
-                "reference": "v2.10.7"
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/2.10.7",
+                "reference": "2.10.7"
             }
         },
         {
@@ -1377,12 +1377,12 @@
             "version_normalized": "1.2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/config.git",
+                "url": "https://github.com/thephpleague/config.git",
                 "reference": "v1.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/config/zipball/v1.2.0",
+                "url": "https://api.github.com/repos/thephpleague/config/zipball/v1.2.0",
                 "reference": "v1.2.0"
             }
         },
@@ -1452,13 +1452,13 @@
             "version_normalized": "3.36.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/flysystem.git",
-                "reference": "v3.36.0"
+                "url": "https://github.com/thephpleague/flysystem.git",
+                "reference": "3.36.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/flysystem/zipball/v3.36.0",
-                "reference": "v3.36.0"
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/3.36.0",
+                "reference": "3.36.0"
             }
         },
         {
@@ -1494,13 +1494,13 @@
             "version_normalized": "3.35.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/flysystem-local.git",
-                "reference": "v3.35.3"
+                "url": "https://github.com/thephpleague/flysystem-local.git",
+                "reference": "3.35.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/flysystem-local/zipball/v3.35.3",
-                "reference": "v3.35.3"
+                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/3.35.3",
+                "reference": "3.35.3"
             }
         },
         {
@@ -1531,13 +1531,13 @@
             "version_normalized": "1.17.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/mime-type-detection.git",
-                "reference": "v1.17.0"
+                "url": "https://github.com/thephpleague/mime-type-detection.git",
+                "reference": "1.17.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/mime-type-detection/zipball/v1.17.0",
-                "reference": "v1.17.0"
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/1.17.0",
+                "reference": "1.17.0"
             },
             "type": "library"
         },
@@ -1626,13 +1626,13 @@
             "version_normalized": "7.10.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/uri.git",
-                "reference": "v7.10.0"
+                "url": "https://github.com/thephpleague/uri.git",
+                "reference": "7.10.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/uri/zipball/v7.10.0",
-                "reference": "v7.10.0"
+                "url": "https://api.github.com/repos/thephpleague/uri/zipball/7.10.0",
+                "reference": "7.10.0"
             }
         },
         {
@@ -1705,13 +1705,13 @@
             "version_normalized": "7.10.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/league/uri-interfaces.git",
-                "reference": "v7.10.0"
+                "url": "https://github.com/thephpleague/uri-interfaces.git",
+                "reference": "7.10.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/league/uri-interfaces/zipball/v7.10.0",
-                "reference": "v7.10.0"
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/7.10.0",
+                "reference": "7.10.0"
             }
         },
         {
@@ -1797,13 +1797,13 @@
             "version_normalized": "3.12.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/monolog/monolog.git",
-                "reference": "v3.12.1"
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "3.12.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/monolog/monolog/zipball/v3.12.1",
-                "reference": "v3.12.1"
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/3.12.1",
+                "reference": "3.12.1"
             }
         },
         {
@@ -1904,13 +1904,13 @@
             "version_normalized": "3.15.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nesbot/carbon.git",
-                "reference": "v3.15.1"
+                "url": "https://github.com/briannesbitt/Carbon.git",
+                "reference": "3.15.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nesbot/carbon/zipball/v3.15.1",
-                "reference": "v3.15.1"
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/3.15.1",
+                "reference": "3.15.1"
             }
         },
         {
@@ -2181,13 +2181,13 @@
             "version_normalized": "1.10.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/phpoption/phpoption.git",
-                "reference": "v1.10.0"
+                "url": "https://github.com/schmittjoh/php-option.git",
+                "reference": "1.10.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpoption/phpoption/zipball/v1.10.0",
-                "reference": "v1.10.0"
+                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/1.10.0",
+                "reference": "1.10.0"
             },
             "type": "library"
         },
@@ -2221,13 +2221,13 @@
             "version_normalized": "1.0.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/clock.git",
-                "reference": "v1.0.0"
+                "url": "https://github.com/php-fig/clock.git",
+                "reference": "1.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/clock/zipball/v1.0.0",
-                "reference": "v1.0.0"
+                "url": "https://api.github.com/repos/php-fig/clock/zipball/1.0.0",
+                "reference": "1.0.0"
             },
             "type": "library"
         },
@@ -2267,13 +2267,13 @@
             "version_normalized": "2.0.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/container.git",
-                "reference": "v2.0.2"
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/container/zipball/v2.0.2",
-                "reference": "v2.0.2"
+                "url": "https://api.github.com/repos/php-fig/container/zipball/2.0.2",
+                "reference": "2.0.2"
             }
         },
         {
@@ -2309,13 +2309,13 @@
             "version_normalized": "1.0.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/event-dispatcher.git",
-                "reference": "v1.0.0"
+                "url": "https://github.com/php-fig/event-dispatcher.git",
+                "reference": "1.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/event-dispatcher/zipball/v1.0.0",
-                "reference": "v1.0.0"
+                "url": "https://api.github.com/repos/php-fig/event-dispatcher/zipball/1.0.0",
+                "reference": "1.0.0"
             }
         },
         {
@@ -2356,13 +2356,13 @@
             "version_normalized": "1.0.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/http-client.git",
-                "reference": "v1.0.3"
+                "url": "https://github.com/php-fig/http-client.git",
+                "reference": "1.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/http-client/zipball/v1.0.3",
-                "reference": "v1.0.3"
+                "url": "https://api.github.com/repos/php-fig/http-client/zipball/1.0.3",
+                "reference": "1.0.3"
             },
             "type": "library"
         },
@@ -2407,13 +2407,13 @@
             "version_normalized": "1.1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/http-factory.git",
-                "reference": "v1.1.0"
+                "url": "https://github.com/php-fig/http-factory.git",
+                "reference": "1.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/http-factory/zipball/v1.1.0",
-                "reference": "v1.1.0"
+                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/1.1.0",
+                "reference": "1.1.0"
             },
             "type": "library"
         },
@@ -2453,13 +2453,13 @@
             "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/http-message.git",
-                "reference": "v2.0"
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/http-message/zipball/v2.0",
-                "reference": "v2.0"
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/2.0",
+                "reference": "2.0"
             },
             "type": "library"
         },
@@ -2496,13 +2496,13 @@
             "version_normalized": "3.0.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/log.git",
-                "reference": "v3.0.2"
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "3.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/log/zipball/v3.0.2",
-                "reference": "v3.0.2"
+                "url": "https://api.github.com/repos/php-fig/log/zipball/3.0.2",
+                "reference": "3.0.2"
             },
             "type": "library"
         },
@@ -2540,13 +2540,13 @@
             "version_normalized": "3.0.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/psr/simple-cache.git",
-                "reference": "v3.0.0"
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "3.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psr/simple-cache/zipball/v3.0.0",
-                "reference": "v3.0.0"
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/3.0.0",
+                "reference": "3.0.0"
             },
             "type": "library"
         },
@@ -2582,12 +2582,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ralouphie/getallheaders.git",
-                "reference": "v3.0.3"
+                "reference": "3.0.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/v3.0.3",
-                "reference": "v3.0.3"
+                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/3.0.3",
+                "reference": "3.0.3"
             },
             "type": "library"
         },
@@ -2656,12 +2656,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/collection.git",
-                "reference": "v2.1.1"
+                "reference": "2.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/collection/zipball/v2.1.1",
-                "reference": "v2.1.1"
+                "url": "https://api.github.com/repos/ramsey/collection/zipball/2.1.1",
+                "reference": "2.1.1"
             }
         },
         {
@@ -2733,12 +2733,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "v4.9.4"
+                "reference": "4.9.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/v4.9.4",
-                "reference": "v4.9.4"
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/4.9.4",
+                "reference": "4.9.4"
             }
         },
         {
@@ -4520,12 +4520,12 @@
             "version_normalized": "2.4.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/tijsverkoyen/css-to-inline-styles.git",
+                "url": "https://github.com/tijsverkoyen/CssToInlineStyles.git",
                 "reference": "v2.4.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tijsverkoyen/css-to-inline-styles/zipball/v2.4.0",
+                "url": "https://api.github.com/repos/tijsverkoyen/CssToInlineStyles/zipball/v2.4.0",
                 "reference": "v2.4.0"
             }
         },
@@ -4641,12 +4641,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/voku/portable-ascii.git",
-                "reference": "v2.1.1"
+                "reference": "2.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/voku/portable-ascii/zipball/v2.1.1",
-                "reference": "v2.1.1"
+                "url": "https://api.github.com/repos/voku/portable-ascii/zipball/2.1.1",
+                "reference": "2.1.1"
             }
         }
     ],
