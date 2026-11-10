@@ -140,3 +140,24 @@ Tags in use:
     is verified reachable before it is committed — a redirect to codeload
     (303/302) counts, HTTP 200 for the archive itself counts, 404 never
     ships.
+26. **An XML declaration is emitted from a Blade PHP block, never from an
+    echo.** Blade compiles a template by running PHP's own lexer over it
+    (`token_get_all`) and compiling only the inline-HTML chunks. `<?xml` is not
+    special to that lexer: `short_open_tag` is `On` in PHP's compiled defaults
+    (both php.ini files say `Off`), so with no php.ini in play `<?xml` is a
+    short open tag, the `{!!` before it and the `!!}` after it land in different
+    chunks, the echo is never compiled, and the raw Blade source is written
+    into the compiled template — which is then a parse error and a 500 raised
+    from `Filesystem::getRequire()`, the top frame of the trace. Blade lifts a
+    PHP block out before the lexer runs (`storePhpBlocks`) and restores it
+    afterwards, so a `<?xml` inside one is never lexed and the view compiles
+    the same with `short_open_tag` either way. `docker/zz-store.ini` sets
+    `short_open_tag = Off` as a second layer, and `SitemapTest` asserts over
+    the template *sources* rather than over a rendered response, because the
+    setting is `PHP_INI_SYSTEM`: a host that runs the tests with it off would
+    otherwise pass no matter what the templates contain. The inline note in the
+    template describes the block in prose rather than naming it, and for the
+    same reason this entry is where the name belongs: `storePhpBlocks` runs
+    *before* comments are stripped, so an `@php` quoted in a comment above the
+    block would pair with the block's `@endphp` and swallow everything between
+    them. Quoting the directive is safe in a file that is never compiled.
