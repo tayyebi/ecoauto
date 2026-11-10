@@ -202,7 +202,8 @@ host_mode() {
     # first install that stops to ask for two random strings is a first install
     # that gets two weak strings typed into it.
     random_secret() {
-        openssl rand -base64 24 2>/dev/null || head -c 24 /dev/urandom | base64
+        bytes="${1:-24}"
+        openssl rand -base64 "$bytes" 2>/dev/null || head -c "$bytes" /dev/urandom | base64
     }
 
     set_env() {
@@ -217,7 +218,8 @@ host_mode() {
     }
 
     if ! grep -q '^APP_KEY=base64:' .env; then
-        set_env APP_KEY "base64:$(random_secret)"
+        # AES-256-CBC requires a 32-byte key, not the 24-byte DB secrets.
+        set_env APP_KEY "base64:$(random_secret 32)"
         log "generated APP_KEY"
     fi
 
