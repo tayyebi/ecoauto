@@ -35,10 +35,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(prepend: [
             TrustProxies::class,
             PreventRequestsDuringMaintenance::class,
-        ], replace: [
+        ], remove: [
+            SubstituteBindings::class,
+        ], append: [
             // Resolve the selected account after the session starts, but before
             // route models are bound against the tenant database.
-            SubstituteBindings::class => [ResolveAccount::class, SubstituteBindings::class],
+            ResolveAccount::class,
+            SubstituteBindings::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
