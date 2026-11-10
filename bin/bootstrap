@@ -49,8 +49,9 @@ container_mode() {
         log "         expected docker/zz-store.ini in the image - rebuild with: docker compose up -d --build"
     fi
 
-    # vendor/ is git-ignored and lives in a named volume, so a fresh clone has
-    # none. composer.lock is the marker: reinstall only when it moves.
+    # vendor/ is git-ignored and lives in the read-write bind mount (there is
+    # no named volume), so a fresh clone has none. composer.lock is the
+    # marker: reinstall only when it moves.
     if [ ! -f "$APP_DIR/vendor/autoload.php" ] || \
        [ "$APP_DIR/composer.lock" -nt "$APP_DIR/vendor/composer/installed.json" ]; then
         log "installing composer dependencies (first run takes a minute)"
@@ -124,6 +125,11 @@ host_mode() {
     log "docker: $(docker --version 2>/dev/null || echo 'version unknown')"
     log "compose: $($COMPOSE version --short 2>/dev/null || echo 'present')"
 
+    # The wait loop below polls /admin/login with curl. Without curl the app
+    # can be perfectly healthy and bootstrap would still time out and report
+    # failure after 10 minutes - so say so now, not then.
+    command -v curl >/dev/null 2>&1 || fail "curl is not installed or not on PATH"
+
     # ------------------------------------------------------------- the port
     # DECISION (infra): 9020 has to be free on THIS host before anything
     # starts. Binding a port another service already owns fails late and with a
@@ -163,7 +169,11 @@ host_mode() {
         exit 1
     fi
 
-    log "port ${PORT} is free"
+    if port_in_use "$PORT"; then
+        log "port ${PORT} is already serving this stack; continuing"
+    else
+        log "port ${PORT} is free"
+    fi
 
     if [ "$CHECK_ONLY" = 1 ]; then
         log "preflight ok, nothing changed"
@@ -257,6 +267,11 @@ host_mode() {
 
     ADMIN_EMAIL=$(grep -E '^STORE_ADMIN_EMAIL=' .env 2>/dev/null | cut -d= -f2- || true)
     ADMIN_EMAIL=${ADMIN_EMAIL:-tayyebimohammadreza@gmail.com}
+    # The seeded password is whatever .env says it is (config/store.php reads
+    # STORE_ADMIN_PASSWORD); printing a hardcoded "password" here told the
+    # operator a password that does not work on any install that changed it.
+    ADMIN_PASSWORD=$(grep -E '^STORE_ADMIN_PASSWORD=' .env 2>/dev/null | cut -d= -f2- || true)
+    ADMIN_PASSWORD=${ADMIN_PASSWORD:-password}
 
     printf '  %s\n' "=================================================================="
     printf '  %s\n' "  store is installed and running"
@@ -264,7 +279,7 @@ host_mode() {
     printf '\n'
     printf '  %s\n' "  admin panel   http://localhost:${PORT}/admin/login"
     printf '  %s\n' "  email         ${ADMIN_EMAIL}"
-    printf '  %s\n' "  password      password"
+    printf '  %s\n' "  password      ${ADMIN_PASSWORD}"
     printf '\n'
     printf '  %s\n' "  Change that password on first login."
     printf '  %s\n' "  Storefront hosts come from account_domains; the seeded tenant is"
