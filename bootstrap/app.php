@@ -8,6 +8,7 @@ use App\Providers\StoreServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 
 // DECISION (infra): the application registers no optional packages. Console
 // commands are listed explicitly so the framework boots without a directory
@@ -34,7 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(prepend: [
             TrustProxies::class,
             PreventRequestsDuringMaintenance::class,
-            ResolveAccount::class,
+        ], replace: [
+            // Resolve the selected account after the session starts, but before
+            // route models are bound against the tenant database.
+            SubstituteBindings::class => [ResolveAccount::class, SubstituteBindings::class],
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

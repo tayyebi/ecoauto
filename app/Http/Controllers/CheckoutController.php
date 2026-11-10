@@ -56,7 +56,7 @@ final class CheckoutController extends Controller
         $this->cart->add((int) $product->getKey(), (int) ($data['quantity'] ?? 1));
 
         return redirect()
-            ->route('cart.show', absolute: false)
+            ->route('cart.show')
             ->with('status', 'محصول به سبد خرید افزوده شد.');
     }
 
@@ -71,7 +71,7 @@ final class CheckoutController extends Controller
             $this->cart->setQuantity((int) $productId, (int) $quantity);
         }
 
-        return redirect()->route('cart.show', absolute: false)->with('status', 'سبد خرید به‌روز شد.');
+        return redirect()->route('cart.show')->with('status', 'سبد خرید به‌روز شد.');
     }
 
     public function remove(Request $request): RedirectResponse
@@ -80,7 +80,7 @@ final class CheckoutController extends Controller
 
         $this->cart->remove((int) $data['product']);
 
-        return redirect()->route('cart.show', absolute: false)->with('status', 'کالا از سبد خرید حذف شد.');
+        return redirect()->route('cart.show')->with('status', 'کالا از سبد خرید حذف شد.');
     }
 
     public function show(): View|RedirectResponse
@@ -88,7 +88,7 @@ final class CheckoutController extends Controller
         $resolved = $this->cart->resolve();
 
         if ($resolved['lines'] === []) {
-            return redirect()->route('cart.show', absolute: false);
+            return redirect()->route('cart.show');
         }
 
         return view('storefront.checkout.show', [
@@ -113,7 +113,7 @@ final class CheckoutController extends Controller
         $resolved = $this->cart->resolve();
 
         if ($resolved['lines'] === []) {
-            return redirect()->route('cart.show', absolute: false);
+            return redirect()->route('cart.show');
         }
 
         $customer = Customer::query()->create($data);
@@ -168,7 +168,7 @@ final class CheckoutController extends Controller
         $order = Order::query()->where('payment_reference', $reference)->first();
 
         if ($order === null) {
-            return redirect()->route('home', absolute: false)->withErrors([
+            return redirect()->route('home')->withErrors([
                 'payment' => 'سفارش مربوط به این پرداخت یافت نشد.',
             ]);
         }
@@ -179,7 +179,7 @@ final class CheckoutController extends Controller
             $this->audit->log('order.payment_failed', $order, ['reference' => $reference]);
 
             return redirect()
-                ->route('checkout.thanks', ['number' => $order->number], absolute: false)
+                ->route('checkout.thanks', ['number' => $order->number])
                 ->with('status', $result['message']);
         }
 
@@ -188,7 +188,7 @@ final class CheckoutController extends Controller
         $this->audit->log('order.paid', $order, ['reference' => $reference]);
 
         return redirect()
-            ->route('checkout.thanks', ['number' => $order->number], absolute: false)
+            ->route('checkout.thanks', ['number' => $order->number])
             ->with('status', $result['message']);
     }
 
