@@ -29,6 +29,11 @@ class Membership extends Model
         return Store::resolver()->registry()->find((string) $this->account_id);
     }
 
+    public function getAccountAttribute(): ?Account
+    {
+        return $this->account();
+    }
+
     public function roleLabel(): string
     {
         return match ($this->role) {

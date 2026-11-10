@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\ResolveAccount;
 use App\Models\Order;
+use App\Models\Page;
 use App\Models\PaymentIntent;
 use App\Models\Product;
 use App\Models\User;
@@ -71,6 +72,8 @@ final class CartAndAdminRegressionTest extends TestCase
 
     public function test_admin_login_starts_the_session_and_accepts_credentials(): void
     {
+        $this->get('/admin')->assertRedirect(route('admin.login'));
+
         User::query()->create([
             'name' => 'Admin', 'email' => 'admin@example.test', 'password' => 'secret-password',
         ]);
@@ -80,6 +83,99 @@ final class CartAndAdminRegressionTest extends TestCase
             'email' => 'admin@example.test', 'password' => 'secret-password',
         ])->assertRedirect(route('admin.dashboard'));
         $this->assertAuthenticated('landlord');
+
+        $this->get('/admin')->assertOk();
+        $this->get('/admin/login')->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_admin_dashboard_loads_after_login_with_memberships_and_account_switch(): void
+    {
+        $tenantDb = tempnam(sys_get_temp_dir(), 'store-tenant-');
+
+        try {
+            config([
+                'database.connections.tenant' => [
+                    'driver' => 'sqlite', 'database' => $tenantDb, 'prefix' => '',
+                    'foreign_key_constraints' => true,
+                ],
+            ]);
+            DB::purge('tenant');
+            $previousDefault = config('database.default');
+            config(['database.default' => 'tenant']);
+            (require database_path('migrations/tenant/0001_01_01_000000_create_tenant_schema.php'))->up();
+            config(['database.default' => $previousDefault]);
+
+            DB::connection('landlord')->table('accounts')->insert([
+                [
+                    'id' => '01k000000000000000000000aa',
+                    'parent_id' => null,
+                    'path' => '/01k000000000000000000000aa/',
+                    'slug' => 'platform',
+                    'name' => 'store',
+                    'status' => 'active',
+                    'plan' => 'platform',
+                    'database_name' => null,
+                ],
+                [
+                    'id' => '01k000000000000000000000bb',
+                    'parent_id' => '01k000000000000000000000aa',
+                    'path' => '/01k000000000000000000000aa/01k000000000000000000000bb/',
+                    'slug' => 'ecoauto',
+                    'name' => 'اکواتو',
+                    'status' => 'active',
+                    'plan' => 'standard',
+                    'database_name' => $tenantDb,
+                ],
+            ]);
+
+            $operator = User::query()->create([
+                'name' => 'مدیر سیستم',
+                'email' => 'operator@example.test',
+                'password' => 'secret-password',
+                'is_platform_admin' => true,
+                'default_account_id' => '01k000000000000000000000bb',
+            ]);
+            $operator->memberships()->create([
+                'account_id' => '01k000000000000000000000bb',
+                'role' => 'owner',
+            ]);
+            $operator->memberships()->create([
+                'account_id' => '01k000000000000000000000aa',
+                'role' => 'owner',
+            ]);
+
+            $this->post('/admin/login', [
+                'email' => 'operator@example.test',
+                'password' => 'secret-password',
+            ])->assertRedirect(route('admin.dashboard'));
+
+            $this->get('/admin')
+                ->assertOk()
+                ->assertSeeText('اکواتو');
+
+            $this->post('/admin/switch-account', [
+                'account' => '01k000000000000000000000aa',
+            ])->assertRedirect(route('admin.dashboard'));
+
+            $this->get('/admin')
+                ->assertOk()
+                ->assertSeeText('این حساب فروشگاه ندارد');
+        } finally {
+            @unlink($tenantDb);
+        }
+    }
+
+    public function test_catch_all_page_route_does_not_shadow_explicit_routes(): void
+    {
+        Page::query()->create([
+            'slug' => 'shipping-policy',
+            'title' => 'Shipping Policy',
+            'body' => '<p>Fast delivery</p>',
+            'is_published' => true,
+        ]);
+
+        $this->get('/cart')->assertOk();
+        $this->get('/shipping-policy')->assertOk()->assertSeeText('Shipping Policy');
     }
 
     public function test_selected_admin_account_is_resolved_before_route_bindings(): void

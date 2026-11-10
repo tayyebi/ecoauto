@@ -38,12 +38,27 @@ final class AuditLogger
             'effective_user_id' => $actor?->id,
             'impersonation_id' => $this->activeImpersonationId(),
             'event' => $event,
-            'subject_type' => $subject !== null ? $subject::class : null,
-            'subject_id' => $subject !== null ? (string) $subject->getKey() : null,
+            'subject_type' => is_object($subject) ? $subject::class : null,
+            'subject_id' => $this->subjectKey($subject),
             'changes' => $changes === [] ? null : $this->redact($changes),
             'ip' => request()->ip(),
             'created_at' => now(),
         ]);
+    }
+
+    private function subjectKey(mixed $subject): ?string
+    {
+        if (! is_object($subject)) {
+            return null;
+        }
+
+        if (method_exists($subject, 'getKey')) {
+            $key = $subject->getKey();
+
+            return $key === null ? null : (string) $key;
+        }
+
+        return isset($subject->id) ? (string) $subject->id : null;
     }
 
     public function activeImpersonationId(): ?string

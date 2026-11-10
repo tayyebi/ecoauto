@@ -59,9 +59,11 @@ final class AuthController extends Controller
 
         if ($account !== null) {
             $request->session()->put('store.account', $account->id);
+        } else {
+            $request->session()->forget('store.account');
         }
 
-        $this->audit->log('auth.login', $user);
+        $this->audit->log('auth.login', $user, [], $account?->id);
 
         return redirect()->intended(route('admin.dashboard'));
     }

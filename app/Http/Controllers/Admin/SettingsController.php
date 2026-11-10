@@ -21,6 +21,8 @@ final class SettingsController extends BaseAdminController
 
     public function edit(Request $request): View
     {
+        $this->storefrontAccount();
+
         return view('admin.settings.edit', $this->shareContext($request, [
             'meta' => ['title' => 'تنظیمات'],
             'settings' => $this->content->all(),
@@ -29,7 +31,7 @@ final class SettingsController extends BaseAdminController
 
     public function update(Request $request): RedirectResponse
     {
-        $account = $this->managedAccount();
+        $account = $this->managedStorefrontAccount();
 
         $data = $request->validate([
             'title' => ['required', 'string', 'max:191'],

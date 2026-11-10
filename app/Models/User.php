@@ -74,7 +74,7 @@ class User extends Authenticatable
         $bestRank = 0;
 
         foreach ($this->memberships()->get() as $membership) {
-            $owned = $membership->account;
+            $owned = $membership->account();
 
             if ($owned === null || ! $owned->contains($account)) {
                 continue;
@@ -124,7 +124,9 @@ class User extends Authenticatable
 
         // Everyone else may only impersonate users inside their own subtree.
         foreach ($target->memberships()->get() as $membership) {
-            if ($membership->account !== null && $this->canManage($membership->account)) {
+            $owned = $membership->account();
+
+            if ($owned !== null && $this->canManage($owned)) {
                 return true;
             }
         }
@@ -135,7 +137,7 @@ class User extends Authenticatable
     public function accounts(): array
     {
         return $this->memberships()->get()
-            ->map(fn (Membership $membership) => $membership->account)
+            ->map(fn (Membership $membership) => $membership->account())
             ->filter()
             ->values()
             ->all();
@@ -146,11 +148,19 @@ class User extends Authenticatable
         if (is_string($this->default_account_id) && $this->default_account_id !== '') {
             $account = Store::resolver()->registry()->find($this->default_account_id);
 
-            if ($account !== null) {
+            if ($account !== null && $this->canAccess($account)) {
                 return $account;
             }
         }
 
-        return $this->accounts()[0] ?? null;
+        $manageable = Store::resolver()->manageableBy($this);
+
+        foreach ($manageable as $account) {
+            if ($account->hasDatabase()) {
+                return $account;
+            }
+        }
+
+        return $manageable[0] ?? null;
     }
 }

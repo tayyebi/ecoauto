@@ -51,6 +51,11 @@ final class Account
         );
     }
 
+    public function getKey(): string
+    {
+        return $this->id;
+    }
+
     public function isActive(): bool
     {
         return $this->status === 'active';

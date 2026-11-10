@@ -50,6 +50,16 @@ final class AccountRegistry
         return $row ? $this->remember(Account::fromRow($row)) : null;
     }
 
+    /** Every account in the platform tree, ordered by materialised path. */
+    public function all(): array
+    {
+        return $this->db->table('accounts')
+            ->orderBy('path')
+            ->get()
+            ->map(fn (object $row) => $this->remember(Account::fromRow($row)))
+            ->all();
+    }
+
     /** Every account in $parent's subtree, excluding $parent itself. */
     public function descendants(Account $parent): array
     {

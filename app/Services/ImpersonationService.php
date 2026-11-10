@@ -72,7 +72,7 @@ final class ImpersonationService
         $impersonatorId = $request->session()->pull('store.impersonator_id');
         $recordId = $request->session()->pull('store.impersonation_id');
 
-        if (! is_string($impersonatorId)) {
+        if (! is_int($impersonatorId) && (! is_string($impersonatorId) || $impersonatorId === '')) {
             return null;
         }
 

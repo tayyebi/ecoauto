@@ -52,12 +52,16 @@ final class AccountResolver
      */
     public function manageableBy(\App\Models\User $user): array
     {
-        $memberships = $user->memberships()->with('account')->get();
+        if ($user->is_platform_admin) {
+            return $this->registry->all();
+        }
+
+        $memberships = $user->memberships()->get();
 
         $accounts = [];
 
         foreach ($memberships as $membership) {
-            $account = $membership->account;
+            $account = $membership->account();
 
             if ($account === null) {
                 continue;
